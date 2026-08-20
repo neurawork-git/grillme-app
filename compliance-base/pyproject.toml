@@ -1,0 +1,20 @@
+[project]
+name = "neurawork-compliance"
+version = "0.1.0"
+description = "Per-repo compliance catalog (GDPR/SOC2/ISO27001) extracted by parallel agents, plus a PRP-plan validator hook (neurawork-cc-harness)."
+requires-python = ">=3.12"
+dependencies = [
+    "claude-agent-sdk>=0.2.96",
+    "python-dotenv>=1.0.0",
+    "tzdata>=2024.1",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pyright]
+# hooks/ and scripts/ import each other's modules by name after putting the install dir
+# and its scripts/ on sys.path at runtime (see hooks/co-post-tooluse.py). Tell pyright the
+# same, so `import config` / `import precheck` resolve statically instead of reporting
+# reportMissingImports on every hook and script.
+extraPaths = ["scripts"]

@@ -1,0 +1,10 @@
+{
+  "catalog_dir": "compliance-base",
+  "model": "",
+  "frameworks": [
+    "gdpr"
+  ],
+  "validate_frameworks": [],
+  "max_concurrency": 12,
+  "validate_mode": "warn"
+}

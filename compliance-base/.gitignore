@@ -1,0 +1,11 @@
+# compliance-compiler runtime (catalog/*.json + catalog/index.md are tracked;
+# everything below is local machinery)
+catalog/.shards/
+reports/
+scripts/state.json
+scripts/last-extract.json
+scripts/*.log
+__pycache__/
+*.pyc
+.venv/
+uv.lock
