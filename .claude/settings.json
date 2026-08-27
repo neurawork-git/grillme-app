@@ -53,7 +53,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "",
+        "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           {
             "type": "command",
@@ -87,5 +87,8 @@
         ]
       }
     ]
+  },
+  "env": {
+    "PRP_HOME": ".claude/PRPs"
   }
 }
