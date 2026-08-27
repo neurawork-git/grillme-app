@@ -17,9 +17,13 @@ import argparse
 import asyncio
 import json
 import os
+import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # <ldir> for _shared
+
+from _shared.repo_guard import WriteGuardError, assert_in_repo_not_dotclaude
 from config import (
     AGENTS_FILE,
     CLAUDEMD_FILE,
@@ -29,9 +33,8 @@ from config import (
     load_cfg,
     now_iso,
 )
+from markers import restore, snapshot
 from utils import file_hash, list_raw_files, load_state, save_state
-
-from _shared.repo_guard import assert_in_repo_not_dotclaude, WriteGuardError
 
 
 def _stamp_last_update() -> None:
@@ -71,7 +74,7 @@ def _list_docs(excluded: list[str]) -> list[Path]:
     )
 
 
-def _build_prompt(log_path: Path) -> str:
+def _build_prompt(log_path: Path, claudemds: list[Path], docs: list[Path]) -> str:
     schema = AGENTS_FILE.read_text(encoding="utf-8")
     cfg = load_cfg()
     depth = int(cfg.get("claudemd_depth", 1))
@@ -80,9 +83,7 @@ def _build_prompt(log_path: Path) -> str:
     docs_name = str(cfg.get("docs_dir", "docs"))
     log_content = log_path.read_text(encoding="utf-8")
 
-    claudemds = _list_claudemd_files(depth, excluded)
     cmd_block = "\n".join(f"- {p.relative_to(REPO_ROOT)}" for p in claudemds) or "(none yet)"
-    docs = _list_docs(excluded)
     docs_block = "\n".join(f"- {p.relative_to(REPO_ROOT)}" for p in docs) or "(none yet)"
 
     return f"""You are the claudemd-lerner. Apply what this session implies to the
@@ -123,8 +124,8 @@ NEVER write under .claude/. If nothing in the log warrants a doc change, make no
 edits."""
 
 
-async def update_one(log_path: Path, state: dict) -> float:
-    """Apply a single daily log to the docs. Returns the API cost."""
+async def update_one(log_path: Path, state: dict) -> tuple[float, bool]:
+    """Apply a single daily log to the docs. Returns ``(cost, ingested)``."""
     from claude_agent_sdk import (
         AssistantMessage,
         ClaudeAgentOptions,
@@ -134,10 +135,17 @@ async def update_one(log_path: Path, state: dict) -> float:
     )
 
     cfg = load_cfg()
+    # The exact files the prompt advertises are the files the guard covers — one
+    # traversal, and the guard is provably scoped to what the learner may edit.
+    claudemds = _list_claudemd_files(int(cfg.get("claudemd_depth", 1)),
+                                     list(cfg.get("excluded_dirs", [])))
+    docs = _list_docs(list(cfg.get("excluded_dirs", [])))
+    guarded = snapshot(claudemds + docs)
+
     cost = 0.0
     try:
         async for message in query(
-            prompt=_build_prompt(log_path),
+            prompt=_build_prompt(log_path, claudemds, docs),
             options=ClaudeAgentOptions(
                 cwd=str(REPO_ROOT),
                 system_prompt={"type": "preset", "preset": "claude_code"},
@@ -158,7 +166,11 @@ async def update_one(log_path: Path, state: dict) -> float:
                 print(f"  Cost: ${cost:.4f}")
     except Exception as e:
         print(f"  Error: {e}")
-        return 0.0
+        return 0.0, False
+    finally:
+        # `finally`, not a trailing call: the early return above must not skip the guard.
+        for message in restore(guarded):
+            print(f"  Marker guard: {message}")
 
     state.setdefault("ingested", {})[log_path.name] = {
         "hash": file_hash(log_path),
@@ -168,7 +180,7 @@ async def update_one(log_path: Path, state: dict) -> float:
     state["updated_count"] = state.get("updated_count", 0) + 1
     state["total_cost"] = state.get("total_cost", 0.0) + cost
     save_state(state)
-    return cost
+    return cost, True
 
 
 def _select(args, state: dict) -> list[Path]:
@@ -211,11 +223,20 @@ def main() -> None:
         return
 
     total = 0.0
+    ingested_any = False
     for i, log_path in enumerate(to_update, 1):
         print(f"\n[{i}/{len(to_update)}] Applying {log_path.name}...")
-        total += asyncio.run(update_one(log_path, state))
+        cost, ingested = asyncio.run(update_one(log_path, state))
+        total += cost
+        ingested_any = ingested_any or ingested
 
-    _stamp_last_update()
+    # Stamp only on real progress: the stamp shuts the SessionStart gate for
+    # `update_age_hours`, so stamping a run where every log errored defers the work
+    # silently instead of letting the next session retry it.
+    if ingested_any:
+        _stamp_last_update()
+    else:
+        print("\nNothing was ingested — leaving the completion stamp untouched.")
     print(f"\nDone. Total cost: ${total:.2f}.")
 
 

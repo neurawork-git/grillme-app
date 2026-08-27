@@ -6,7 +6,7 @@ full before running an update or a seed.
 
 > Lineage: this is a repo-local learner inspired by the LLM-as-compiler idea
 > (Andrej Karpathy's LLM wiki, rebuilt openly by coleam00's claude-memory-compiler)
-> and by the doc-maintenance pattern of NeuraWork's own coding-suite learner. The
+> and by the doc-maintenance pattern of prior NeuraWork doc-maintenance tooling. The
 > design here is independent NeuraWork work; only the underlying concept is shared.
 > Unlike the knowledge-compiler, this learner builds **no** knowledge wiki — it
 > only maintains the docs the agent already reads.
@@ -99,6 +99,10 @@ Session logs (the learner's input) use this shape, one file per day:
 6. Do not duplicate: if a fact already lives in a CLAUDE.md, update it in place
    rather than restating it elsewhere.
 7. **Never write under `.claude/`** and never write outside the repository.
+8. **Never edit inside a marker block.** Text delimited by `<!-- owner:name BEGIN … -->`
+   and `<!-- owner:name END -->` is owned by the tool that wrote it. Read it for
+   context; never rewrite, reword, reorder, or delete it, and never add a second block
+   with the same marker id. Content outside the markers is yours to maintain as usual.
 
 ## Seed Rules (first install on an existing repo)
 
