@@ -87,6 +87,9 @@ corpus an agent can be pointed at.
 - [[concepts/grillme-app-repository]] — the repository they are installed in
 - [[connections/harness-outputs-are-the-only-executable]] — the harness output is
   the only working artefact here
+- [[concepts/kb-researcher-directive]] — the compiler's second job as of v3
+- [[concepts/harness-plugin-and-engine-versions]] — how the engines are shipped
+  and upgraded
 
 ## Sources
 
@@ -96,3 +99,5 @@ corpus an agent can be pointed at.
   conventions, gotchas
 - `knowledge-base/CLAUDE.md` — layout, config, local conventions, gotchas
 - `knowledge-base/AGENTS.md`, `claudemd-lerner/AGENTS.md` — the two constitutions
+- [[daily/2026-08-27.md]] — the plugin upgrade that gave the compiler its two
+  extra hooks

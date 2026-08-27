@@ -174,6 +174,8 @@ hook; checking later leaves a window where a nested session runs the hooks.
 | Flush errored | A `Memory Flush` entry in `daily/<date>.md` plus an ERROR line in `flush.log` |
 | Background run never fires | Compare `scripts/last-update.json` / `last-compile.json` against `daily/*.md` mtimes, and check for a fresh `cl-update.lock` / `kc-compile.lock` |
 | Nothing at all happens | Confirm you are not in a linked worktree, and that `CLAUDE_INVOKED_BY` is unset in your shell |
+| `kb-researcher` never gets spawned | Check `research_directive` and the two match patterns in `knowledge-base/config.json`, and that the invocation actually matches (`prp-prd-update` is rejected on purpose) |
+| Compile/query/update fails immediately | `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` must be set — only capture works without one |
 
 **Run a hook by hand.** Hooks read JSON from stdin, so they can be exercised
 directly:
@@ -224,6 +226,9 @@ These hold across every entrypoint and must not be relaxed:
   in its directory.
 - **Hooks never crash a session.** Guard first, swallow errors around optional
   work, keep the `additionalContext` print unconditional.
+- **Hooks never exit non-zero.** The exit code is not cosmetic: `2` on
+  `PreToolUse` blocks the tool call, and a non-zero exit on `UserPromptSubmit`
+  erases the user's prompt. Every path in every entrypoint ends at exit 0.
 - **State writes are atomic** — `*.tmp` then `os.replace()` — so a killed run
   cannot leave a half-written `state.json` or settings file.
 - **Nothing outside `daily/` and the declared outputs is ever written** by the

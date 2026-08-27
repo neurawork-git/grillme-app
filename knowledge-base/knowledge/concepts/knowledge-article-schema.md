@@ -5,8 +5,9 @@ tags: [knowledge-base, conventions, schema]
 sources:
   - "knowledge-base/AGENTS.md"
   - "knowledge-base/CLAUDE.md"
+  - "daily/2026-08-27.md"
 created: 2026-08-20
-updated: 2026-08-20
+updated: 2026-08-27
 ---
 
 # Knowledge Article Schema
@@ -64,6 +65,10 @@ the contradiction check for a fast, zero-cost pass.
 - [[concepts/llm-as-compiler-model]] — who writes these articles and why
 - [[connections/compile-prompt-ceiling]] — where the schema meets its scaling
   limit
+- [[connections/knowledge-base-closes-the-loop]] — why the linking rules became
+  the retrieval mechanism
+- [[concepts/kb-researcher-directive]] — the agent that traverses articles by
+  backlink
 
 ## Sources
 
@@ -71,3 +76,5 @@ the contradiction check for a fast, zero-cost pass.
   rules, lint checks
 - `knowledge-base/CLAUDE.md` — local conventions, the lint severity table, the
   index/log tracking asymmetry
+- [[daily/2026-08-27.md]] — the v3 hooks that make an agent traverse this schema
+  by index and backlink

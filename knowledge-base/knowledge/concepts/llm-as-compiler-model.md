@@ -72,6 +72,8 @@ Cost is tracked throughout: every SDK call reads `cfg["model"]` and passes
 - [[concepts/compliance-compiler]] — the same analogy applied to regulation
 - [[connections/harness-outputs-are-the-only-executable]] — what that means in
   this particular repository
+- [[connections/knowledge-base-closes-the-loop]] — the executable being linked
+  back into the next build
 
 ## Sources
 

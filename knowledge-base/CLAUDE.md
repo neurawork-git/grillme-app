@@ -13,6 +13,7 @@ via the `KNOWLEDGE_ROOT` env var) is both the machinery root and the output root
 ## Commands
 
 ```bash
+uv sync --directory knowledge-base                                 # after install/upgrade
 uv run --directory knowledge-base python scripts/seed.py           # first install
 uv run --directory knowledge-base python scripts/compile.py        # changed logs
 uv run --directory knowledge-base python scripts/compile.py --all
@@ -31,37 +32,59 @@ uv run --directory knowledge-base python -m unittest discover -s _shared/tests -
 uv run --directory knowledge-base python scripts/flush.py <context_file.md> <session_id>
 ```
 
+The plugin also ships the engine as a skill and a slash command. Invoke them
+**fully qualified** so they resolve regardless of what else is enabled:
+`/neurawork-cc-harness:kc-compile` for a manual compile of `daily/` into
+`knowledge/`, `neurawork-cc-harness:knowledge-compiler` for the skill.
+
+`compile.py`, `query.py` and `seed.py` call the Claude Agent SDK and need
+`ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN`; the capture hooks and the
+scaffold work without one.
+
 ## Configuration (`config.json`)
+
+Defaults live in `scripts/config.py::DEFAULT_CFG`; `config.json` is merged over
+them and is read **live** on every hook invocation, so changing a value needs no
+installer re-run.
 
 | Key | Current value | Default | Meaning |
 |---|---|---|---|
 | `knowledge_dir` | `knowledge-base` | `knowledge-base` | This engine's directory name |
 | `model` | `""` | `""` | Empty means "let the SDK choose" (passed as `None`) |
 | `compile_age_hours` | `6` | `6` | Age gate before `SessionStart` spawns a compile |
+| `research_directive` | *(unset)* | `true` | Kill switch for the `kb-researcher` spawn directive |
+| `research_skill_match` | *(unset)* | `^([\w-]+:)?prp-(plan\|prd\|debug)$` | Matched against `tool_input["skill"]` in `pre-skill.py` |
+| `research_prompt_match` | *(unset)* | `^\s*/(?:[\w-]+:)?prp-(plan\|prd\|debug)(?![\w-])` | Matched against the raw prompt in `user-prompt-submit.py` |
 
 ## Layout
 
 ```
 knowledge-base/
 ├── AGENTS.md              constitution — article formats, compile/query/lint rules
-├── VERSION                "1"
+├── VERSION                "3"
 ├── config.json
 ├── pyproject.toml         deps: claude-agent-sdk, python-dotenv, tzdata
 ├── hooks/
-│   ├── session-start.py   inject knowledge/index.md; maybe spawn a compile
-│   ├── session-end.py     capture transcript -> spawn flush.py
-│   └── pre-compact.py     same, before auto-compaction
+│   ├── session-start.py       inject knowledge/index.md; maybe spawn a compile
+│   ├── session-end.py         capture transcript -> spawn flush.py
+│   ├── pre-compact.py         same, before auto-compaction
+│   ├── user-prompt-submit.py  research directive on a TYPED /prp-prd|plan|debug
+│   └── pre-skill.py           research directive on a MODEL-INVOKED research skill
 ├── scripts/
 │   ├── seed.py            build the first articles from the repo itself
 │   ├── compile.py         daily logs -> concept/connection articles
 │   ├── query.py           index-guided Q&A, optional --file-back
 │   ├── lint.py            7 health checks -> reports/lint-<date>.md
 │   ├── flush.py           distil one session into daily/<date>.md
+│   ├── research_directive.py  the kb-researcher directive + match patterns,
+│   │                          shared by the two injecting hooks
 │   ├── config.py          paths + config
 │   ├── utils.py           state, hashing, wikilink/index helpers, should_compile()
 │   └── seed_prompt.txt    seed instructions prepended to AGENTS.md
 ├── knowledge/
-│   └── index.md           master catalog (currently header-only — nothing compiled yet)
+│   ├── index.md           master catalog
+│   ├── concepts/          one article per concept
+│   └── connections/       rare, non-obvious links between concepts
 └── _shared/               stdlib helpers + unittest suite (see root CLAUDE.md)
 ```
 
@@ -77,9 +100,10 @@ is local noise; the index is the retrieval mechanism and must be shared.
 
 ## Current State
 
-The base is **empty** — `knowledge/index.md` contains only its table header, and
-`concepts/`, `connections/`, `qa/` do not exist yet. `compile.py` and `seed.py`
-create them as needed. Do not hand-author articles: run `seed.py` once, then let
+The base is **seeded**: `knowledge/index.md` lists 19 articles across
+`knowledge/concepts/` and `knowledge/connections/`. `knowledge/qa/` does not
+exist yet — `query.py --file-back` creates it on demand, as `compile.py` and
+`seed.py` do for the other directories. Do not hand-author articles: let
 `compile.py` maintain the base.
 
 ## Local Conventions
@@ -88,6 +112,14 @@ create them as needed. Do not hand-author articles: run `seed.py` once, then let
   `pre-compact.py`); the learner's equivalents carry a `cl-` prefix.
 - **The lock file is `kc-compile.lock`** (the learner's is `cl-update.lock`) so
   the two engines never contend.
+- **The two research hooks share one directive module.** `pre-skill.py` and
+  `user-prompt-submit.py` cover the two entry paths into a research skill — no
+  single hook event sees both — and must render the *same* text from
+  `scripts/research_directive.py`; never duplicate the wording in a hook. Both
+  fail open (any exception → no output, exit 0) and emit nothing at all when the
+  trigger does not match. `pre-skill.py` is registered in its own
+  `matcher: "Skill"` group, never the catch-all. Details and configuration:
+  [docs/hooks-runbook.md](../docs/hooks-runbook.md).
 - **Wikilinks are repo-relative from `knowledge/`, without `.md`**:
   `[[concepts/slug]]`, `[[connections/slug]]`. Daily-log references are the one
   exception — they keep the extension (`[[daily/2026-06-18.md]]`) because a log

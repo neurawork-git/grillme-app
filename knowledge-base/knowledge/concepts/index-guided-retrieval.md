@@ -7,8 +7,9 @@ sources:
   - "docs/documentation-pipeline.md"
   - "CLAUDE.md"
   - "knowledge-base/CLAUDE.md"
+  - "daily/2026-08-27.md"
 created: 2026-08-20
-updated: 2026-08-20
+updated: 2026-08-27
 ---
 
 # Index-Guided Retrieval (Why No RAG)
@@ -48,6 +49,14 @@ under version control alongside the articles while `log.md` is gitignored.
 Query cost is folded into the same accounting as compilation: `query.py` adds its
 cost to `state["total_cost"]` alongside a `query_count`.
 
+Since engine version 3 there is a second reader of the base that is not
+`query.py`: the `kb-researcher` subagent spawned during PRP research workflows
+(see [[concepts/kb-researcher-directive]]). It is handed the same retrieval
+contract in stronger terms — start at the index, cite full article paths, and
+then **walk backlinks**, because `connections/` articles are reachable no other
+way. Backlink traversal is the part the human-facing query rules leave implicit,
+and it is what turns the index from a flat catalog into an entry point.
+
 ## Related Concepts
 
 - [[concepts/knowledge-article-schema]] — the index format this depends on
@@ -55,6 +64,9 @@ cost to `state["total_cost"]` alongside a `query_count`.
   analogy
 - [[connections/compile-prompt-ceiling]] — the limit bites the compiler before
   the query engine
+- [[concepts/kb-researcher-directive]] — the second reader of the base
+- [[connections/knowledge-base-closes-the-loop]] — retrieval as an input to the
+  next session
 
 ## Sources
 
@@ -62,3 +74,5 @@ cost to `state["total_cost"]` alongside a `query_count`.
 - `docs/documentation-pipeline.md` — the same reasoning plus cost accounting
 - `CLAUDE.md` — "No RAG" as a key decision
 - `knowledge-base/CLAUDE.md` — `query.py` gotchas and `--file-back` behaviour
+- [[daily/2026-08-27.md]] — `kb-researcher` as a fourth research axis reading
+  this base
