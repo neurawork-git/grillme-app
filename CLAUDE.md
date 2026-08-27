@@ -4,22 +4,39 @@
 
 `grillme-app` is a git repository that currently contains **no application
 source**. Its `README.md` holds only the project title. What is checked in today
-is the NeuraWork Claude Code documentation harness: two self-contained,
-per-repo engines that turn Claude Code session transcripts into durable project
-documentation.
+is the NeuraWork Claude Code harness: self-contained, per-repo engines
+installed from the `neurawork-cc-harness` plugin.
 
 - **`claudemd-lerner/`** — the *learner*. Keeps this CLAUDE.md hierarchy and the
   `docs/` tree current from session logs.
 - **`knowledge-base/`** — the *knowledge compiler*. Builds and maintains a
   structured, queryable wiki under `knowledge-base/knowledge/`.
+- **`compliance-base/`** — the *compliance compiler*. Extracts GDPR/SOC 2/ISO
+  27001 prose into a machine-readable constraint catalog and validates PRP plans
+  against it. It owns the `PostToolUse` hook; the other two never register there.
 
-Both are installed as subdirectories of the repo they serve, and both write
+All are installed as subdirectories of the repo they serve, and all write
 their outputs **inside this repository, never under `.claude/`**.
 
 ## Commands
 
-Both engines are `uv`-managed Python packages (`requires-python >= 3.12`). Every
-command below is run from the repository root.
+The engines are `uv`-managed Python packages (`requires-python >= 3.12`). Every
+command below is run from the repository root. After installing or upgrading an
+engine, sync its dependencies:
+
+```bash
+uv sync --directory knowledge-base
+uv sync --directory claudemd-lerner
+```
+
+Compile, query, update and seed call the Claude Agent SDK and therefore need
+`ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` in the environment; capture (the
+hooks and scaffolding) works without either.
+
+The plugin also exposes the engines as skills and slash commands — invoke them
+**fully qualified** (`/neurawork-cc-harness:kc-compile`,
+`neurawork-cc-harness:knowledge-compiler`) so they resolve regardless of what
+else is enabled.
 
 ### claudemd-lerner (CLAUDE.md + docs/)
 
@@ -84,10 +101,11 @@ grillme-app/
 ├── docs/                      ← long-form guides (learner output)
 ├── .claude/settings.json      ← hook registration (NEVER written by the engines)
 ├── claudemd-lerner/           ← learner engine (see its CLAUDE.md)
-└── knowledge-base/            ← knowledge compiler (see its CLAUDE.md)
+├── knowledge-base/            ← knowledge compiler (see its CLAUDE.md)
+└── compliance-base/           ← compliance compiler (constraint catalog + plan validation)
 ```
 
-Both engines share the same three-stage shape:
+The learner and the knowledge compiler share the same three-stage shape:
 
 1. **Capture** — `SessionEnd` and `PreCompact` hooks read the Claude Code JSONL
    transcript, extract the recent turns, write them to a context file, and
@@ -103,6 +121,13 @@ Both engines share the same three-stage shape:
 `SessionStart` does two things per engine: injects current context
 (`additionalContext`) and, behind an age gate, spawns stage 3 in the background.
 
+The knowledge compiler registers two further, capture-unrelated hooks —
+`UserPromptSubmit` and `PreToolUse` (matcher `Skill`) — which inject a directive
+telling the session to spawn `kb-researcher` as a **fourth research axis** next
+to prp-core's `codebase-explorer`, `codebase-analyst` and `web-researcher`, so
+PRDs and plans start from what the repo already learned. See
+[docs/hooks-runbook.md](docs/hooks-runbook.md).
+
 ### Major components
 
 | Path | Role |
@@ -112,9 +137,10 @@ Both engines share the same three-stage shape:
 | `claudemd-lerner/hooks/cl-*.py` | SessionStart / SessionEnd / PreCompact entrypoints |
 | `claudemd-lerner/scripts/` | `seed.py`, `update.py`, `flush.py`, `config.py`, `utils.py` |
 | `knowledge-base/AGENTS.md` | Constitution the compiler LLM follows (article formats, compile/query/lint rules) |
-| `knowledge-base/config.json` | `knowledge_dir`, `compile_age_hours`, `model` |
-| `knowledge-base/hooks/*.py` | SessionStart / SessionEnd / PreCompact entrypoints |
-| `knowledge-base/scripts/` | `seed.py`, `compile.py`, `query.py`, `lint.py`, `flush.py`, `config.py`, `utils.py` |
+| `knowledge-base/config.json` | `knowledge_dir`, `compile_age_hours`, `model`, `research_directive`, `research_skill_match`, `research_prompt_match` |
+| `knowledge-base/hooks/*.py` | SessionStart / SessionEnd / PreCompact plus the two research-directive entrypoints |
+| `knowledge-base/scripts/` | `seed.py`, `compile.py`, `query.py`, `lint.py`, `flush.py`, `research_directive.py`, `config.py`, `utils.py` |
+| `compliance-base/AGENTS.md` | Constitution for catalog extraction and PRP-plan validation |
 | `knowledge-base/knowledge/index.md` | Master catalog — read first by both the compiler and the query engine |
 | `<engine>/_shared/` | Stdlib-only helpers, vendored identically into both engines |
 
@@ -195,6 +221,18 @@ background run only when the last run is at least `*_age_hours` old (default 6),
 there is genuinely new daily content, no fresh lock is held, and the session is
 in the main checkout — not a linked worktree. Capture from a worktree is
 redirected into the main checkout so it survives `git worktree remove`.
+
+**Hook events are owned, not shared.** Engines coexist in one
+`.claude/settings.json` by keeping their entries distinct: `cl-`-prefixed
+filenames for the learner, `PostToolUse` reserved for the compliance compiler,
+and the knowledge compiler's `PreToolUse` entry in its own `matcher: "Skill"`
+group — never `matcher: ""`, which would spawn a process on every tool call.
+
+**Runtime config is read live.** The knowledge compiler's `research_directive`
+kill switch and the two match patterns live in `knowledge-base/config.json` and
+are read on every hook invocation, so flipping them needs no installer re-run.
+Disabling the switch stops the injection but keeps the hooks; removing the
+feature entirely means deleting the two hook entries from `.claude/settings.json`.
 
 **Recursion guard.** Any Claude Code the SDK spawns is marked with
 `CLAUDE_INVOKED_BY=neurawork_cc_harness`; hooks see it and exit immediately, so

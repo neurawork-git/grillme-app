@@ -1,14 +1,15 @@
 # Hooks Runbook
 
-Operating the two documentation engines' Claude Code hooks: what is registered,
-what runs when, and how to diagnose it. For the design behind the stages, see
+Operating the harness engines' Claude Code hooks: what is registered, what runs
+when, and how to diagnose it. For the design behind the stages, see
 [documentation-pipeline.md](documentation-pipeline.md).
 
 ## Registered Hooks
 
-`.claude/settings.json` registers six hooks — three events × two engines, each
-event using a single `matcher: ""` group with both engines' commands in order
-(knowledge-base first, claudemd-lerner second).
+The three capture events (`SessionStart`, `PreCompact`, `SessionEnd`) each use a
+single `matcher: ""` group holding both documentation engines' commands in order
+(knowledge-base first, claudemd-lerner second). Three further entries belong to a
+single engine each.
 
 | Event | Command | Timeout |
 |---|---|---|
@@ -18,17 +19,29 @@ event using a single `matcher: ""` group with both engines' commands in order
 | `PreCompact` | `uv run --directory "$CLAUDE_PROJECT_DIR/claudemd-lerner" python hooks/cl-pre-compact.py` | 10s |
 | `SessionEnd` | `uv run --directory "$CLAUDE_PROJECT_DIR/knowledge-base" python hooks/session-end.py` | 10s |
 | `SessionEnd` | `uv run --directory "$CLAUDE_PROJECT_DIR/claudemd-lerner" python hooks/cl-session-end.py` | 10s |
+| `UserPromptSubmit` | `uv run --directory "$CLAUDE_PROJECT_DIR/knowledge-base" python hooks/user-prompt-submit.py` | 10s |
+| `PreToolUse` (matcher `Skill`) | `uv run --directory "$CLAUDE_PROJECT_DIR/knowledge-base" python hooks/pre-skill.py` | 10s |
+| `PostToolUse` | `uv run --directory "$CLAUDE_PROJECT_DIR/compliance-base" python hooks/co-post-tooluse.py` | 15s |
 
 `SessionStart` gets the longer timeout because it also evaluates the background
 spawn gate. All commands use `$CLAUDE_PROJECT_DIR` — never a hardcoded path — so
 the repo stays relocatable.
 
+The last three entries are how the engines stay out of each other's way: the
+knowledge compiler owns its `PreToolUse` group with `matcher: "Skill"` (a
+catch-all `matcher: ""` would spawn a process on every tool call), and
+`PostToolUse` belongs to the compliance compiler alone.
+
 **Never hand-edit these entries when installing or upgrading an engine.** Use
 `_shared/settings.py::merge_hooks`, which takes `(event, command, timeout,
-marker)` tuples and is idempotent: it recognises an existing hook by whether the
-`marker` string appears in its command, updates only a drifted command (keeping
-any hand-edited `timeout` and `type`), reuses an existing `matcher: ""` group,
-writes atomically, and returns `False` when nothing changed. It raises
+marker)` or `(event, command, timeout, marker, matcher)` tuples — the 4-tuple
+form means `matcher: ""` — and is idempotent: it recognises an existing hook by
+whether the `marker` string appears in its command, updates only a drifted
+command (keeping any hand-edited `timeout` and `type`), reuses the group whose
+`matcher` equals the requested one, writes atomically, and returns `False` when
+nothing changed. The matcher is **not** hand-editable state: the engine owns
+which tools its hook must see, so an entry sitting under the wrong matcher is
+*moved* on re-run (and an emptied group dropped) rather than duplicated. It raises
 `SettingsError` and leaves the file untouched if the existing JSON is invalid.
 
 ## What SessionStart Injects
@@ -52,6 +65,49 @@ searching today and yesterday only.
 
 The injection is unconditional — the gate evaluation is wrapped in a bare
 `except Exception: pass` with the comment *"injection must always proceed"*.
+
+## The Research Directive
+
+`hooks/user-prompt-submit.py` and `hooks/pre-skill.py` inject a short directive
+that tells the session to spawn `neurawork-cc-harness:kb-researcher` as a
+**fourth research axis** alongside `prp-core:codebase-explorer`,
+`prp-core:codebase-analyst` and `prp-core:web-researcher`, in the *same* message
+so the four run concurrently. The directive names the resolved absolute knowledge
+dir (the agent must not glob for it) and requires the report to cite full article
+paths and to walk backlinks — `connections/` articles are reachable no other way.
+
+**Why two hooks.** A research skill is entered by two paths and no single event
+sees both: a typed `/prp-prd …` is expanded into the prompt and never routed as a
+tool call, so only `UserPromptSubmit` fires; a model-invoked skill arrives as
+`tool_name: "Skill"` with `tool_input: {"skill": "prp-core:prp-prd"}` and no new
+prompt, so only `PreToolUse` fires. Both hooks render the *same* text from
+`scripts/research_directive.py` so the two halves cannot drift.
+
+**Configuration** lives in `knowledge-base/config.json` and is read live on every
+invocation — no installer re-run:
+
+| Key | Default | Meaning |
+|---|---|---|
+| `research_directive` | `true` | Kill switch; `false` disables both injections |
+| `research_skill_match` | `^([\w-]+:)?prp-(plan\|prd\|debug)$` | Matched against `tool_input["skill"]` (plugin-qualified, hence the optional prefix) |
+| `research_prompt_match` | `^\s*/(?:[\w-]+:)?prp-(plan\|prd\|debug)(?![\w-])` | Matched against the raw prompt, anchored at its start |
+
+Both patterns reject `prp-prd-update` — a real prp-core skill. The prompt pattern
+uses `(?![\w-])` rather than `\b`, because `-` *is* a word boundary and `\b`
+would let the two halves disagree about the same workflow. A pattern that is
+empty or fails to compile falls back to the module default rather than raising or
+matching everything.
+
+`research_directive: false` only disables the feature; to remove it entirely,
+delete the two hook entries from `.claude/settings.json`.
+
+**Failing open is mandatory.** A `PreToolUse` hook must never exit non-zero —
+exit code 2 on that event *blocks the tool call*; on `UserPromptSubmit` it erases
+the user's prompt. Both hooks wrap everything in `except Exception: return` and
+end at `sys.exit(0)`, print nothing but the JSON envelope, emit no output at all
+when the trigger does not match, and never emit `permissionDecision`. They read
+no corpus files — the directive is a static string and the config is one small
+file.
 
 ## The Background Spawn Gate
 
