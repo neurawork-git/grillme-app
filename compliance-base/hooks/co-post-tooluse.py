@@ -1,7 +1,8 @@
 """PostToolUse hook — validate a PRP plan against the compliance catalog on write.
 
 Fires after every tool call; fast-exits unless the tool was a Write/Edit to a live
-PRP plan file (``.claude/PRPs/plans/*.plan.md``). For a plan write it runs the
+plan file (``.claude/PRPs/plans/*.plan.md`` by default; see the ``plans_subpath`` /
+``plan_suffix`` config keys for other layouts). For a plan write it runs the
 deterministic ``precheck`` inline (<1s), emits an advisory summary as
 additionalContext, and spawns the deep LLM ``validate.py`` detached (a report lands
 in ``reports/``). ``validate_mode: "block"`` additionally returns a block decision
@@ -26,7 +27,7 @@ from _shared.hookio import child_env, read_hook_input, recursion_guard
 
 recursion_guard()
 
-from _shared.gitctx import in_worktree, main_checkout_root
+from _shared.gitctx import checkout_roots, in_worktree, main_checkout_root
 from config import load_cfg
 from precheck import is_plan_path, precheck
 
@@ -129,17 +130,23 @@ def main() -> None:
         return
 
     path_str = _plan_path_from(data)
-    repo_root = KDIR.parent  # the working-tree root (main checkout or worktree)
-    if not is_plan_path(path_str, repo_root):
+    repo_root = KDIR.parent  # this install's working tree — whose CLAUDE.md rules apply
+    cfg = load_cfg()         # needed before the match: it carries the plan-path keys
+    # Match against every working tree the plan could belong to. From a worktree the PRP
+    # store is reached through a symlink into the MAIN checkout, so the plan resolves
+    # outside this checkout and `relative_to(repo_root)` alone finds nothing.
+    for doc_root in checkout_roots(str(KDIR), local=repo_root):
+        if is_plan_path(path_str, doc_root, cfg):
+            break
+    else:
         return
 
     plan_path = Path(path_str)
     if not plan_path.is_absolute():
-        plan_path = (repo_root / plan_path).resolve()
+        plan_path = (doc_root / plan_path).resolve()
     if not plan_path.exists():
         return
 
-    cfg = load_cfg()
     root = effective_root()
     catalog_dir = root / "catalog"
     try:
