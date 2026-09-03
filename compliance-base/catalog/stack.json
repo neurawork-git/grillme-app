@@ -2,7 +2,7 @@
  "generated": "2026-08-27",
  "source": "compliance-base/catalog/capabilities.json",
  "capabilities_generated": "2026-07-23",
- "capabilities_hash": "62d67801ed9172bc",
+ "capabilities_hash": "d2b64fbf4ec1bdcc",
  "choices": {
   "gdpr/accountability-liability-governance-evidence": {
    "capability": "Accountability, liability & governance evidence",
@@ -17,8 +17,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "The operator runs the Compose stack as controller and hands session content to Anthropic, Deepgram and further transcription providers, so role and instruction documentation must back every processing step.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -35,9 +35,9 @@
    "chosen": null,
    "rationale": "",
    "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicable": false,
+   "applicability_reason": "The agent only asks interview questions and generates a Markdown artefact from the decision tree, and the only automated evaluation of the user is the gamification counter of completed sessions and answered questions, which produces no legal or similarly significant effect.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -55,8 +55,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Postgres is declared the single source of truth for state, history and decision tree and MinIO holds the screenshots, so restoring both after a container or disk failure is the only path back to the user's data.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -74,8 +74,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "The stack stores account credentials, an encrypted anthropic_api_key column, session transcripts and screenshots, all of which can be exposed by a breach that must be detected and reported.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -92,8 +92,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Voice recordings and screenshots are forwarded to external providers whose free tiers may use the transmitted data for training, so the lawfulness of those transfers rests on a demonstrable and withdrawable permission from the person being grilled.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -110,8 +110,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Session content goes to Anthropic, Deepgram, Groq and AssemblyAI, and the specification itself lists Drittlandtransfer-Dokumentation as an open item for hosting.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -129,8 +129,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "The product already commits to deleting audio after successful transcription and to editable transcripts so wrongly recognised words can be corrected, both of which are lifecycle and accuracy controls that need enforcing.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -148,8 +148,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Session export as JSON is an explicit v1 feature and is exactly the structured machine-readable output this capability governs.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -166,8 +166,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Accounts, sessions, messages, images and token usage are all keyed by user_id from day one, so access requests must be answerable across every one of those tables.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -184,8 +184,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Users log in with email and password and feed transcripts and screenshots into third-party providers, so they must be told what happens to that data and how to complain.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -203,8 +203,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Every interview round re-sends history and stored screenshots to Claude and every voice turn to the transcription and speech provider, so the set of recipients of a session's data has to be recorded and informed when data is erased.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -221,8 +221,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Voice recordings, screenshots and free-text interview content are processed by an LLM and by external speech providers, a combination whose risk has to be assessed before the planned hosted multi-user operation.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -239,8 +239,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "The specification plans a hosted multi-user operation on the same data model, so the designation question and its published contact details have to be settled rather than assumed away.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -257,8 +257,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Passwords are Argon2-hashed, the per-user anthropic_api_key column is specified as encrypted, and API credentials plus session content travel between the Compose services and external providers.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -276,8 +276,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Every user-related table carries a user_id from the start precisely so that sessions, messages and MinIO objects stay bound to their owner once a second person uses the instance.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -294,8 +294,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "The product processes interview content for artefact generation and additionally logs token usage per session for the operator's cost control, a secondary purpose that needs its own recorded basis.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -312,8 +312,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Token usage is logged per session as the operator's own cost control rather than at the user's request, so the person being grilled must be able to object to that processing.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -331,8 +331,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "The design already builds in deletion of audio after transcription and cascading account deletion as up-front constraints because retrofitting them would touch every schema and storage path.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -349,8 +349,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Screenshots stay permanently in the history and are re-sent to Claude on every follow-up call, and speech leaves the machine to Deepgram unless a local implementation is configured, none of which is visible to the user without a notice.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -367,8 +367,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "The specification names Anthropic, transcription and speech providers as processors requiring Auftragsverarbeitungsverträge and makes multi-user operation conditional on an API-key contract instead of a subscription token.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -385,8 +385,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "A Verarbeitungsverzeichnis maintained as a document in the repository is already a committed v1 deliverable.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -404,8 +404,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Account deletion cascading across all data including the MinIO objects is a v1 feature, and transcripts are editable so wrongly recognised content can be corrected.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -422,8 +422,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Export and account deletion act on the full session history and stored screenshots, so the requester must be proven to be the account holder before either runs.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -441,8 +441,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "The stack pins ag-ui-claude-agent-sdk at an early 0.1.0 version and vendors a third-party skill, both of which need recurring review to confirm the protective measures still hold.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   },
@@ -460,814 +460,8 @@
    "rationale": "",
    "chosen_from": null,
    "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/change-release-management-for-production": {
-   "capability": "Change & Release Management for Production",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "GitHub (Enterprise) — PRs + required reviewers + Environment protection rules",
-    "Argo CD",
-    "Argo Rollouts",
-    "Kyverno + Sigstore Cosign"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/cryptography-encryption-in-transit-at-rest-key-management": {
-   "capability": "Cryptography: Encryption in Transit, At Rest & Key Management",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "OpenBao",
-    "SoftHSM2 (PKCS#11) as key root of trust",
-    "cert-manager + Let's Encrypt/ACME",
-    "Istio (or Linkerd) service mesh"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/data-classification-asset-inventory-secure-data-lifecycle": {
-   "capability": "Data Classification, Asset Inventory & Secure Data Lifecycle",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "Snipe-IT",
-    "Microsoft Presidio",
-    "OpenMetadata",
-    "nwipe"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/endpoint-off-premises-asset-protection": {
-   "capability": "Endpoint & Off-Premises Asset Protection",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "Fleet (osquery)",
-    "MeshCentral",
-    "NanoMDM",
-    "Snipe-IT"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/environment-separation-test-data-protection": {
-   "capability": "Environment Separation & Test Data Protection",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "Argo CD",
-    "OpenTofu (with per-environment workspaces/state)",
-    "Neosync",
-    "Teleport"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/ict-continuity-disaster-recovery": {
-   "capability": "ICT Continuity & Disaster Recovery",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "Bacula",
-    "DRBD (with Pacemaker/Corosync for automated failover)",
-    "Velero",
-    "pgBackRest"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/network-activity-monitoring-anomaly-detection": {
-   "capability": "Network Activity Monitoring & Anomaly Detection",
-   "framework": "iso27001",
-   "mandatory_linked": false,
-   "options": [
-    "Suricata",
-    "Zeek",
-    "Wazuh",
-    "OpenSearch"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/network-segmentation-multi-tenant-isolation": {
-   "capability": "Network Segmentation & Multi-Tenant Isolation",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "Cilium (with Hubble)",
-    "Istio Ambient Mesh",
-    "OPNsense",
-    "Headscale"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/outsourced-development-oversight": {
-   "capability": "Outsourced Development Oversight",
-   "framework": "iso27001",
-   "mandatory_linked": false,
-   "options": [
-    "GitHub Enterprise (CODEOWNERS + branch protection + required reviews + audit log)",
-    "Eramba Community",
-    "Semgrep",
-    "Sigstore / cosign (with SLSA provenance)"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/physical-environmental-facility-security": {
-   "capability": "Physical & Environmental Facility Security",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "AWS Artifact / Google Cloud Compliance Reports / Azure Service Trust Portal (cloud provider physical-security inheritance)",
-    "Fleet",
-    "NetBox",
-    "Verkada (or Envoy visitor management + Kisi access control)"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/pii-privacy-controls-legal-regulatory-register": {
-   "capability": "PII/Privacy Controls & Legal-Regulatory Register",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "Microsoft Presidio",
-    "Klaro",
-    "CISO Assistant",
-    "OSS Review Toolkit (ORT)"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/rbac-least-privilege-identity-lifecycle": {
-   "capability": "RBAC, Least Privilege & Identity Lifecycle",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "Keycloak",
-    "OpenBao",
-    "Pomerium"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/secure-development-lifecycle-secure-coding": {
-   "capability": "Secure Development Lifecycle & Secure Coding",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "OWASP ASVS 5.0 (Application Security Verification Standard)",
-    "Semgrep",
-    "OWASP ZAP",
-    "Trivy"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/secure-remote-access-egress-filtering": {
-   "capability": "Secure Remote Access & Egress Filtering",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "NetBird",
-    "Teleport",
-    "Squid",
-    "Pomerium"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/security-governance-hr-security-operating-procedures": {
-   "capability": "Security Governance, HR Security & Operating Procedures",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "Comp AI",
-    "Gophish",
-    "Frappe HR",
-    "BookStack"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/security-incident-detection-response-forensics": {
-   "capability": "Security Incident Detection, Response & Forensics",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "Wazuh",
-    "TheHive (with Cortex)",
-    "Netflix Dispatch",
-    "Velociraptor"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/supplier-ict-supply-chain-cloud-security-management": {
-   "capability": "Supplier, ICT Supply-Chain & Cloud Security Management",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "CISO Assistant (Community Edition)",
-    "OWASP Dependency-Track",
-    "Prowler",
-    "OWASP Amass"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "iso27001/vulnerability-remediation-in-the-delivery-pipeline": {
-   "capability": "Vulnerability Remediation in the Delivery Pipeline",
-   "framework": "iso27001",
-   "mandatory_linked": true,
-   "options": [
-    "Trivy (Aqua Security)",
-    "Semgrep OSS (SAST) + Trivy (dependency/vuln scanning)",
-    "OWASP Dependency-Track"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/business-continuity-disaster-recovery": {
-   "capability": "Business continuity & disaster recovery",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "restic",
-    "MinIO (S3-compatible object store with Object Lock/WORM)",
-    "Velero",
-    "Terraform"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/capacity-planning-elastic-scaling": {
-   "capability": "Capacity planning & elastic scaling",
-   "framework": "soc2",
-   "mandatory_linked": false,
-   "options": [
-    "Prometheus",
-    "KEDA (Kubernetes Event-Driven Autoscaling)",
-    "Karpenter",
-    "Grafana"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/change-management-secure-sdlc": {
-   "capability": "Change management & secure SDLC",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "GitHub (branch protection + CODEOWNERS + required reviews)",
-    "GitHub Actions with Environments + required reviewers",
-    "OpenTofu (Terraform-compatible IaC)",
-    "Argo CD (GitOps)"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/control-environment-governance-ethics-personnel": {
-   "capability": "Control environment: governance, ethics & personnel",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "GlobaLeaks",
-    "SimpleRisk (Core)",
-    "OrangeHRM (Open Source Edition)",
-    "Keycloak"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/control-framework-design-policy-deployment-accountability": {
-   "capability": "Control framework design, policy deployment & accountability",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Comp AI (Comp)",
-    "Eramba (Community Edition)",
-    "NIST OSCAL + IBM trestle"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/control-information-communications": {
-   "capability": "Control information & communications",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Eramba Community",
-    "GlobaLeaks",
-    "BookStack",
-    "Nextcloud"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/control-monitoring-evaluation-deficiency-remediation": {
-   "capability": "Control monitoring, evaluation & deficiency remediation",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Comp AI",
-    "Prowler",
-    "Grafana + Prometheus/Loki (LGTM stack)",
-    "Redmine"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/data-classification-confidentiality-protection": {
-   "capability": "Data classification & confidentiality protection",
-   "framework": "soc2",
-   "mandatory_linked": false,
-   "options": [
-    "Apache Atlas",
-    "Microsoft Presidio",
-    "OpenBao",
-    "Open Policy Agent (OPA) with OpenFGA"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/data-retention-secure-disposal": {
-   "capability": "Data retention & secure disposal",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "OpenBao",
-    "SeaweedFS",
-    "OpenMetadata",
-    "ShredOS / nwipe"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/data-subject-rights-complaint-handling": {
-   "capability": "Data-subject rights & complaint handling",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Ethyca Fides",
-    "Flowable",
-    "Chatwoot"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/encryption-cryptographic-key-management": {
-   "capability": "Encryption & cryptographic key management",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "OpenBao (Transit secrets engine + PKCS#11 HSM auto-unseal)",
-    "cert-manager + Let's Encrypt (ACME)",
-    "Google Tink"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/environmental-safeguards-facility-monitoring": {
-   "capability": "Environmental safeguards & facility monitoring",
-   "framework": "soc2",
-   "mandatory_linked": false,
-   "options": [
-    "Cloud provider compliance attestations (AWS Artifact / Google Cloud compliance reports / Azure Service Trust Portal)",
-    "Prometheus + Alertmanager with SNMP Exporter",
-    "Grafana OnCall",
-    "openDCIM"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/external-communication-incident-reporting-channels": {
-   "capability": "External communication & incident reporting channels",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "security.txt (RFC 9116)",
-    "OWASP DefectDojo",
-    "Cachet",
-    "Zammad"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/identity-access-management": {
-   "capability": "Identity & access management",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Keycloak",
-    "Apache Syncope"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/incident-response-recovery": {
-   "capability": "Incident response & recovery",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Prometheus Alertmanager",
-    "Netflix Dispatch",
-    "Cachet"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/infrastructure-network-boundary-endpoint-protection": {
-   "capability": "Infrastructure, network boundary & endpoint protection",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "OWASP Coraza WAF (+ OWASP Core Rule Set)",
-    "Cilium + Hubble (eBPF)",
-    "Wazuh",
-    "Falco"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/personal-data-quality-management": {
-   "capability": "Personal data quality management",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Great Expectations",
-    "Soda Core (SodaCL)",
-    "dbt Core (tests + snapshots)",
-    "Elementary Data"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/physical-access-control-secure-media-disposal": {
-   "capability": "Physical access control & secure media disposal",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Cloud provider (AWS / Azure / GCP) inherited data-center controls",
-    "Verkada or Kisi cloud access control",
-    "Fleet",
-    "comply/OpenComply"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/privacy-breach-detection-notification": {
-   "capability": "Privacy breach detection & notification",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Wazuh",
-    "DFIR-IRIS",
-    "Camunda Platform 7",
-    "OpenMetadata"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/privacy-notice-consent-lawful-collection": {
-   "capability": "Privacy notice, consent & lawful collection",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Ethyca Fides",
-    "Klaro!",
-    "Jitsu"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/processing-integrity-validation-pipeline-output-verification": {
-   "capability": "Processing integrity: validation, pipeline & output verification",
-   "framework": "soc2",
-   "mandatory_linked": false,
-   "options": [
-    "Temporal",
-    "Great Expectations",
-    "Apache Kafka with Apicurio Registry",
-    "SeaweedFS (S3 Object Lock / WORM)"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/risk-assessment-fraud-risk-governance": {
-   "capability": "Risk assessment & fraud-risk governance",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "CISO Assistant",
-    "SimpleRisk",
-    "Apache Superset"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/system-monitoring-alerting-audit-log-retention": {
-   "capability": "System monitoring, alerting & audit log retention",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Prometheus + Alertmanager",
-    "Grafana Loki + Grafana",
-    "Wazuh",
-    "AWS S3 with Object Lock (WORM)"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/vendor-third-party-risk-management": {
-   "capability": "Vendor & third-party risk management",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Eramba (Community Edition)",
-    "SimpleRisk (Core)",
-    "OWASP Nuclei"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
-   "ranked": null,
-   "ranked_from": null
-  },
-  "soc2/vulnerability-management-remediation": {
-   "capability": "Vulnerability management & remediation",
-   "framework": "soc2",
-   "mandatory_linked": true,
-   "options": [
-    "Trivy",
-    "Prowler",
-    "DefectDojo",
-    "OSV-Scanner"
-   ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
-   "applicable": true,
-   "applicability_reason": "",
-   "scoped_from": null,
+   "applicability_reason": "Users dictate free-form spoken content and upload arbitrary screenshots, so the system cannot rule out that special-category content enters the session history.",
+   "scoped_from": "60ac023d83a582c0",
    "ranked": null,
    "ranked_from": null
   }

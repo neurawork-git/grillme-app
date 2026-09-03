@@ -12,9 +12,11 @@ sources:
   - "compliance-base/scripts/capabilities.py"
   - "compliance-base/scripts/validate.py"
   - "compliance-base/scripts/precheck.py"
+  - "compliance-base/scripts/stack.py"
   - ".claude/settings.json"
+  - "daily/2026-08-27.md"
 created: 2026-08-20
-updated: 2026-08-20
+updated: 2026-09-03
 ---
 
 # The Compliance Compiler
@@ -43,6 +45,14 @@ executable, and `validate` is the runtime.
   `.claude/PRPs/plans/*.plan.md`.
 - **Advisory, not legal advice and not certification** — stated explicitly in the
   constitution's conventions.
+- `scripts/stack.py` is the **single schema owner** for `catalog/stack.json`,
+  with four entry points: `--scaffold` to (re)generate rows, and
+  `--apply-scope` / `--apply-ranking` / `--apply-selection`, through which
+  [[concepts/stack-compiler]] writes everything it decides. A plain run is
+  report-only and always exits 0.
+- The engine is at version 5 here, upgraded from 2 on 2026-08-27 without
+  re-extraction: the catalog files were already present, so `--extract` was
+  skipped and roughly 30 SDK agents plus their API cost avoided.
 
 ## Details
 
@@ -65,7 +75,21 @@ MPL-2.0), while **internal-infra** components may be copyleft or free-tier
 proprietary as long as they cost nothing at the start. `stack.py` then records
 which component was actually chosen per `<framework>/<capability-slug>` key,
 recomputing machine-owned fields each run while carrying decision-owned fields
-over.
+over. Each of its three `--apply-*` entry points refuses a partial or malformed
+write: scoping must cover exactly the key set with a reason for every exclusion,
+a ranking must name exactly a capability's own `options` once each with a
+rationale, and a selection must name a component from that entry's pool. Only
+selection is deliberately partial, because it is incremental human work — and an
+omission there is visible in the next gap report rather than silent.
+
+Two things about the current install are worth recording. `config.json` activates
+`gdpr` alone, but that list is not enforced by `--scaffold`
+([[concepts/framework-filter-not-enforced]]), and the framework filtering is
+meant to happen at processing time — the catalog itself keeps all three
+frameworks even where only one is active. And the gap report is a moving
+document: `reports/stack-gaps-2026-08-27.md` first read 62 of 62 mandatory-linked
+capabilities unchosen, and reads 24 of 24 after the product-scoping pass narrowed
+`stack.json` to GDPR — see [[concepts/grillme-compliance-scope]].
 
 Plan checking is split by speed. `precheck.py` is pure stdlib with no LLM and
 runs inline in the hook (under a second), emitting an advisory summary as
@@ -83,6 +107,12 @@ mandatory constraints are unaddressed.
 - [[concepts/hook-safety-invariants]] — the same defensive hook conventions
 - [[concepts/llm-as-compiler-model]] — the compiler analogy applied to regulation
 - [[concepts/grillme-app-repository]] — the repository it is installed in
+- [[concepts/stack-compiler]] — the engine that narrows its catalog to one
+  product and writes through `stack.py`
+- [[concepts/framework-filter-not-enforced]] — the `--scaffold` / `config.json`
+  mismatch
+- [[concepts/grillme-compliance-scope]] — what its catalog looks like once scoped
+  for GrillMe
 
 ## Sources
 
@@ -94,4 +124,10 @@ mandatory constraints are unaddressed.
 - `compliance-base/hooks/co-post-tooluse.py` — PostToolUse trigger and blocking
 - `compliance-base/scripts/*.py` — module docstrings for extract, capabilities,
   validate, precheck, stack, shards
-- `.claude/settings.json` — hook registration
+- `compliance-base/scripts/stack.py` — the four entry points and their refusal
+  conditions
+- `.claude/settings.json` — hook registration; the `PostToolUse` group
+  (matcher `Write|Edit|MultiEdit`) now carries `stack-base`'s hook alongside it
+- [[daily/2026-08-27.md]] — the version 2 → 5 upgrade with extraction skipped,
+  and the `frameworks` list kept at `gdpr` although catalog files for the other
+  two frameworks exist on disk

@@ -9,7 +9,7 @@
 | [[concepts/grill-decision-tree]] | The JSON decision tree, the per-round frontier, and user-confirmed session closure | .claude/spec.md | 2026-08-20 |
 | [[concepts/input-channels]] | Text, voice, and screenshots in one history; Transcriber/Speaker providers and audio deletion | .claude/spec.md | 2026-08-20 |
 | [[concepts/claude-credentials-and-tenancy]] | OAuth token vs. API key, and why multi-user operation is hard-coupled to the key | .claude/spec.md | 2026-08-20 |
-| [[concepts/documentation-harness]] | The NeuraWork engines installed here — learner, knowledge compiler, and vendored `_shared/` | CLAUDE.md, docs/documentation-pipeline.md, engine CLAUDE.md + AGENTS.md | 2026-08-20 |
+| [[concepts/documentation-harness]] | The NeuraWork engines installed here — learner, knowledge compiler, and vendored `_shared/` | CLAUDE.md, docs/documentation-pipeline.md, engine CLAUDE.md + AGENTS.md, daily/2026-08-27.md | 2026-08-27 |
 | [[concepts/llm-as-compiler-model]] | `daily/` is source, the LLM is the compiler, the docs are the executable | CLAUDE.md, docs/documentation-pipeline.md, both AGENTS.md | 2026-08-20 |
 | [[concepts/capture-distil-synthesise-pipeline]] | The three stages a session passes through, plus seeding as stage 0 | CLAUDE.md, docs/documentation-pipeline.md, docs/hooks-runbook.md | 2026-08-20 |
 | [[concepts/hook-safety-invariants]] | Never under `.claude/`, never crash a session, atomic writes, recursion guard | CLAUDE.md, docs/hooks-runbook.md, docs/documentation-pipeline.md | 2026-08-20 |

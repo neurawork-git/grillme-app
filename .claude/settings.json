@@ -7,7 +7,7 @@
           {
             "type": "command",
             "command": "uv run --directory \"$CLAUDE_PROJECT_DIR/knowledge-base\" python hooks/session-start.py",
-            "timeout": 15
+            "timeout": 60
           },
           {
             "type": "command",
@@ -24,7 +24,7 @@
           {
             "type": "command",
             "command": "uv run --directory \"$CLAUDE_PROJECT_DIR/knowledge-base\" python hooks/pre-compact.py",
-            "timeout": 10
+            "timeout": 60
           },
           {
             "type": "command",
@@ -41,7 +41,7 @@
           {
             "type": "command",
             "command": "uv run --directory \"$CLAUDE_PROJECT_DIR/knowledge-base\" python hooks/session-end.py",
-            "timeout": 10
+            "timeout": 60
           },
           {
             "type": "command",
@@ -75,7 +75,7 @@
           {
             "type": "command",
             "command": "uv run --directory \"$CLAUDE_PROJECT_DIR/knowledge-base\" python hooks/user-prompt-submit.py",
-            "timeout": 10
+            "timeout": 60
           }
         ]
       }
@@ -87,7 +87,7 @@
           {
             "type": "command",
             "command": "uv run --directory \"$CLAUDE_PROJECT_DIR/knowledge-base\" python hooks/pre-skill.py",
-            "timeout": 10
+            "timeout": 60
           }
         ]
       }

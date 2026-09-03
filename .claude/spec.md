@@ -111,7 +111,10 @@ beides. Das Schema sieht deshalb von Anfang an eine optionale
 `user.anthropic_api_key`-Spalte vor (verschlüsselt), damit später jeder Nutzer
 seinen eigenen Schlüssel hinterlegen kann.
 
-Bei geteiltem Schlüssel wird der Token-Verbrauch pro Session protokolliert.
+In v1 läuft die Instanz ausschließlich auf dem Credential des Betreibers, der
+zugleich der einzige Nutzer ist. Ein geteilter Schlüssel für mehrere Menschen
+ist Phase 2 (siehe 10) und in v1 nicht startbar. Der Token-Verbrauch wird
+trotzdem pro Session protokolliert — als Kostenkontrolle des Betreibers.
 
 ### 3.4 Anmeldung
 
@@ -293,7 +296,7 @@ umgelegt.
 | `prompt_template` | Bibliothek | Ausgabevorlage, Interview-Fokus, System-Flag |
 | `artifact` | Ergebnis | erzeugtes Markdown, Tickets |
 | `achievement` | Gamification | Schwellen und Titel als Seed-Daten |
-| `token_usage` | Kostenkontrolle | pro Session, bei geteiltem Schlüssel unverzichtbar |
+| `token_usage` | Kostenkontrolle | pro Session, Ausgabenkontrolle des Betreibers |
 
 Jede nutzerbezogene Tabelle trägt von Anfang an eine `user_id`, auch solange nur
 ein Nutzer existiert.
@@ -304,7 +307,8 @@ ein Nutzer existiert.
 - Ticket-Erzeugung direkt in GitHub Issues; v1 exportiert Markdown-Dateien
 - Verwaltungsoberfläche für die Prompt-Bibliothek
 - Ersetzen alter Bilder durch textliche Beschreibungen zur Token-Ersparnis
-- Mehrbenutzerbetrieb und Hosting, gekoppelt an den Wechsel auf API-Schlüssel
+- Mehrbenutzerbetrieb und Hosting, gekoppelt an den Wechsel auf API-Schlüssel;
+  dazu gehört der geteilte Schlüssel für mehrere Nutzer
 
 ## 11. Quellen der Recherche
 
