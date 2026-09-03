@@ -1,8 +1,8 @@
 {
- "generated": "2026-08-27",
+ "generated": "2026-09-03",
  "source": "compliance-base/catalog/capabilities.json",
  "capabilities_generated": "2026-07-23",
- "capabilities_hash": "d2b64fbf4ec1bdcc",
+ "capabilities_hash": "75cd87fb15f80f7e",
  "choices": {
   "gdpr/accountability-liability-governance-evidence": {
    "capability": "Accountability, liability & governance evidence",
@@ -19,8 +19,21 @@
    "applicable": true,
    "applicability_reason": "The operator runs the Compose stack as controller and hands session content to Anthropic, Deepgram and further transcription providers, so role and instruction documentation must back every processing step.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Fides (Ethyca)",
+     "rationale": "GrillMe already plans the Verarbeitungsverzeichnis as a maintained document in the repository, so a code-first tool that versions RoPA and lawful bases next to the source matches the project's chosen working style with no extra service."
+    },
+    {
+     "component": "Probo",
+     "rationale": "A single small self-hosted service can join the docker-compose stack to hold the operator's control and policy evidence once hosting starts, without the separate database engine the other GRC candidate needs."
+    },
+    {
+     "component": "SimpleRisk Core",
+     "rationale": "Its PHP/MySQL deployment adds a second database technology to a stack whose specification names Postgres as the only source of truth, which is heavy for a one-operator instance."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/automated-decision-making-profiling-safeguards": {
    "capability": "Automated decision-making & profiling safeguards",
@@ -51,14 +64,31 @@
     "pgBackRest",
     "SeaweedFS"
    ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
+   "chosen": "pgBackRest",
+   "rationale": "Postgres is the declared single source of truth; PITR of that one database covers essentially the whole product with no new service.",
+   "chosen_from": "5fb15e36cf368cb1",
    "applicable": true,
    "applicability_reason": "Postgres is declared the single source of truth for state, history and decision tree and MinIO holds the screenshots, so restoring both after a container or disk failure is the only path back to the user's data.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "pgBackRest",
+     "rationale": "Postgres holds the decision tree, history and artifacts that the specification declares the single source of truth, so point-in-time recovery of that one database restores essentially the whole product."
+    },
+    {
+     "component": "Restic",
+     "rationale": "One binary backing up the compose volumes (including the MinIO object data and the .env credentials) fits a stack that runs with `docker compose up` on a single machine."
+    },
+    {
+     "component": "SeaweedFS",
+     "rationale": "The stack already runs MinIO for screenshots, so this S3 store is only useful as a separate off-machine backup target and duplicates an existing service otherwise."
+    },
+    {
+     "component": "Velero",
+     "rationale": "It backs up Kubernetes workloads and persistent volumes, and v1 has no Kubernetes at all — only a local docker-compose stack."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/breach-detection-register-notification": {
    "capability": "Breach detection, register & notification",
@@ -76,8 +106,25 @@
    "applicable": true,
    "applicability_reason": "The stack stores account credentials, an encrypted anthropic_api_key column, session transcripts and screenshots, all of which can be exposed by a breach that must be detected and reported.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Ethyca Fides",
+     "rationale": "The breach register and notification templates belong with the same privacy tooling that carries this product's RoPA and DSR work, and it is the only candidate that covers the register/notification half rather than only detection."
+    },
+    {
+     "component": "Wazuh",
+     "rationale": "File-integrity and log monitoring over the compose containers is the only real detection source here, though a full SIEM indexer is disproportionate for a one-machine, one-user v1 and is GPL-2.0 run operator-side only."
+    },
+    {
+     "component": "n8n",
+     "rationale": "Its flow editor could wire detection to the 72-hour notification once the instance is hosted, but the Sustainable Use License is non-OSI source-available and is acceptable only because the product never ships or resells it."
+    },
+    {
+     "component": "TheHive (Community / v4 lineage)",
+     "rationale": "A full incident-response platform on an EOL AGPL-3.0 v4 branch is far beyond what a single-operator local instance can staff, so it ranks last and its license is tolerable only operator-side."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/consent-capture-lifecycle-management": {
    "capability": "Consent capture & lifecycle management",
@@ -94,8 +141,21 @@
    "applicable": true,
    "applicability_reason": "Voice recordings and screenshots are forwarded to external providers whose free tiers may use the transmitted data for training, so the lawfulness of those transfers rests on a demonstrable and withdrawable permission from the person being grilled.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "PostgreSQL",
+     "rationale": "Consent receipts for voice recording and image upload can live as timestamped rows beside the existing user/session tables, which the specification already makes the single source of truth."
+    },
+    {
+     "component": "c15t",
+     "rationale": "A headless consent store fits a Next.js/CopilotKit frontend that has no banner surface and no third-party scripts to gate."
+    },
+    {
+     "component": "Klaro!",
+     "rationale": "It is configured as a list of third-party services to unblock, and GrillMe embeds no such scripts — its consent UI would sit over an empty service list."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/cross-border-transfer-safeguards": {
    "capability": "Cross-border transfer safeguards",
@@ -112,8 +172,21 @@
    "applicable": true,
    "applicability_reason": "Session content goes to Anthropic, Deepgram, Groq and AssemblyAI, and the specification itself lists Drittlandtransfer-Dokumentation as an open item for hosting.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Fides by Ethyca",
+     "rationale": "The product ships data to Anthropic and Deepgram in the US, and this records each of those flows against its Chapter V basis in the same repository that holds the processing record."
+    },
+    {
+     "component": "OpenBao",
+     "rationale": "The schema already foresees an encrypted `user.anthropic_api_key`, so a key-management service is the natural place for those keys once the instance is hosted rather than run from a local .env."
+    },
+    {
+     "component": "AWS European Sovereign Cloud",
+     "rationale": "v1 runs `docker compose up` on the operator's own machine, so an EEA hosting substrate has nothing to host and is proprietary infrastructure that would only matter in the Phase-2 hosted operation."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/data-minimisation-accuracy-retention-lifecycle": {
    "capability": "Data minimisation, accuracy & retention lifecycle",
@@ -125,14 +198,31 @@
     "pg_partman + pg_cron",
     "ARX Data Anonymization Tool"
    ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
+   "chosen": "pg_partman + pg_cron",
+   "rationale": "Audio-deletion-after-transcription is already a named v1 feature; a Postgres extension needs no new container.",
+   "chosen_from": "e507e76c698bc4a4",
    "applicable": true,
    "applicability_reason": "The product already commits to deleting audio after successful transcription and to editable transcripts so wrongly recognised words can be corrected, both of which are lifecycle and accuracy controls that need enforcing.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "pg_partman + pg_cron",
+     "rationale": "Scheduled deletion inside the existing Postgres is exactly what the audio-after-transcription rule and token_usage housekeeping need, and it adds no container to the compose stack."
+    },
+    {
+     "component": "Ethyca Fides",
+     "rationale": "It supplies the retention and PII map over the nine specified tables plus the MinIO objects, which the deletion cascade must cover explicitly."
+    },
+    {
+     "component": "Temporal",
+     "rationale": "Durable workflow orchestration is more machinery than a single FastAPI process deleting rows and MinIO objects for one user requires, though it would earn its place in the hosted Phase 2."
+    },
+    {
+     "component": "ARX Data Anonymization Tool",
+     "rationale": "v1 keeps no analytics or statistical dataset that would need k-anonymity — expired data is deleted outright, not generalised — and it is a Java tool in a Python/TypeScript stack."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/data-portability-structured-export": {
    "capability": "Data portability & structured export",
@@ -150,8 +240,25 @@
    "applicable": true,
    "applicability_reason": "Session export as JSON is an explicit v1 feature and is exactly the structured machine-readable output this capability governs.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Ethyca Fides",
+     "rationale": "The specification already commits to a session export as JSON, and this is the candidate that scopes such an export to the requester's own data across the Postgres tables and MinIO keys."
+    },
+    {
+     "component": "SeaweedFS",
+     "rationale": "Staging an export bundle behind an expiring presigned link is a real need, but MinIO is already in the stack for exactly this storage role, so this would be a second object store."
+    },
+    {
+     "component": "Temporal",
+     "rationale": "Assembling one user's sessions and screenshots completes inside a single request here, so a resumable long-running export workflow is unused capacity in v1."
+    },
+    {
+     "component": "Data Transfer Initiative Portability API (formerly Data Transfer Project)",
+     "rationale": "Direct controller-to-controller transfer has no counterpart for a self-hosted single-user grilling tool, and its Java adapter framework targets large consumer platforms this product will never federate with."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/data-subject-request-intake-access-fulfillment": {
    "capability": "Data-subject request intake & access fulfillment",
@@ -168,8 +275,21 @@
    "applicable": true,
    "applicability_reason": "Accounts, sessions, messages, images and token usage are all keyed by user_id from day one, so access requests must be answerable across every one of those tables.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Ethyca Fides",
+     "rationale": "It is the only candidate that both takes in the request and assembles the access copy across Postgres and MinIO, and it deploys as a Python service alongside the existing FastAPI backend."
+    },
+    {
+     "component": "Microsoft Presidio",
+     "rationale": "Grill transcripts and screenshots can name colleagues and customers, so PII redaction is what keeps an access export from disclosing those third parties, and it drops into the Python backend as a library."
+    },
+    {
+     "component": "Temporal",
+     "rationale": "One-month SLA timers and extension branches are real obligations but oversized for an instance where the only data subject is the operator running it."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/data-subject-transparency-complaints-remedies": {
    "capability": "Data-subject transparency, complaints & remedies",
@@ -186,8 +306,21 @@
    "applicable": true,
    "applicability_reason": "Users log in with email and password and feed transcripts and screenshots into third-party providers, so they must be told what happens to that data and how to complain.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Ethyca Fides",
+     "rationale": "The subject-facing request portal is the piece this product actually lacks — there are only four screens in v1 and none of them takes a rights request."
+    },
+    {
+     "component": "Klaro!",
+     "rationale": "Its notice widget can carry the plain-language transparency text at the points where the product collects new data categories, namely voice recording and screenshot upload in the chat screen."
+    },
+    {
+     "component": "Zammad",
+     "rationale": "A staff-facing help desk with agent queues presumes a support team that a one-person local instance does not have, and its AGPL-3.0 Ruby stack would be the largest service in the compose file."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/downstream-recipient-tracking-change-propagation": {
    "capability": "Downstream recipient tracking & change propagation",
@@ -205,8 +338,25 @@
    "applicable": true,
    "applicability_reason": "Every interview round re-sends history and stored screenshots to Claude and every voice turn to the transcription and speech provider, so the set of recipients of a session's data has to be recorded and informed when data is erased.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "PostgreSQL (append-only disclosure ledger via system-versioning/temporal_tables)",
+     "rationale": "The recipient list here is short and known — Claude, the transcription provider, the speech provider — so an append-only table in the database the product already runs records every disclosure without a new dependency."
+    },
+    {
+     "component": "Fides (Ethyca)",
+     "rationale": "It maps which recipient received which session data and exposes that list to the subject, complementing the ledger rather than duplicating the datastore."
+    },
+    {
+     "component": "Temporal",
+     "rationale": "Retried fan-out matters only once erasure must reach external recipients, and the specification already removes the hardest case by deleting audio right after transcription."
+    },
+    {
+     "component": "Apache Camel",
+     "rationale": "Hundreds of JVM connectors are pointed at integration landscapes this product does not have — its two or three API vendors expose no erasure endpoint to call."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/dpia-prior-consultation-workflow": {
    "capability": "DPIA & prior consultation workflow",
@@ -223,8 +373,21 @@
    "applicable": true,
    "applicability_reason": "Voice recordings, screenshots and free-text interview content are processed by an LLM and by external speech providers, a combination whose risk has to be assessed before the planned hosted multi-user operation.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "SurveyJS",
+     "rationale": "The MIT form library renders the assessment questionnaire directly in the existing React frontend, provided the report PDF is generated by another OSS library because the survey-pdf add-on is a paid proprietary product."
+    },
+    {
+     "component": "SimpleRisk",
+     "rationale": "Its risk register and review reminders suit the pre-hosting assessment the specification defers to Phase 2, at the cost of a separate PHP/MySQL service beside the Postgres-only stack."
+    },
+    {
+     "component": "Flowable",
+     "rationale": "A BPMN engine coordinates a DPIA across reviewers and approvers, and in this product the operator is the only participant in that workflow."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/dpo-designation-governance": {
    "capability": "DPO designation & governance",
@@ -241,8 +404,21 @@
    "applicable": true,
    "applicability_reason": "The specification plans a hosted multi-user operation on the same data model, so the designation question and its published contact details have to be settled rather than assumed away.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Ethyca Fides",
+     "rationale": "It gives whoever holds the DPO role continuous visibility into the data map and requests for this instance, using the same platform the product already carries for RoPA and DSR work."
+    },
+    {
+     "component": "CNIL Open Source PIA (LINCnil/pia)",
+     "rationale": "The DPA's own assessment tool is a sound way to document this product's Claude and Deepgram transfers before hosting, and its GPL-3.0 license is acceptable only because it stays an operator-side tool that never ships with GrillMe."
+    },
+    {
+     "component": "Klaro Consent Manager",
+     "rationale": "Consent-record governance is a narrow slice of the DPO's task and this product has no cookie or tracker consent to monitor in the first place."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/encryption-security-of-processing": {
    "capability": "Encryption & security of processing",
@@ -251,16 +427,30 @@
    "options": [
     "OpenBao",
     "cert-manager + Let's Encrypt",
-    "Linkerd"
+    "Linkerd",
+    "Infisical"
    ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
+   "chosen": "Infisical",
+   "rationale": "Operator already runs Infisical; feeds the compose stack's secrets from one container, lighter than OpenBao's PKI/dynamic-secrets scope for a single-compose-host deployment, and the image redeploys unchanged when hosting moves.",
+   "chosen_from": "9c9ce52869249c2a",
    "applicable": true,
    "applicability_reason": "Passwords are Argon2-hashed, the per-user anthropic_api_key column is specified as encrypted, and API credentials plus session content travel between the Compose services and external providers.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "OpenBao",
+     "rationale": "The specification already requires an encrypted `user.anthropic_api_key` column plus provider tokens in .env, and a transit engine keeps those keys out of the application and the compose file."
+    },
+    {
+     "component": "cert-manager + Let's Encrypt",
+     "rationale": "Automatic certificates become necessary at the Phase-2 hosted operation, but a local `docker compose up` instance has no public hostname for ACME to validate."
+    },
+    {
+     "component": "Linkerd",
+     "rationale": "Mesh mTLS between a handful of containers on one Docker network is disproportionate, and the mesh assumes the Kubernetes deployment this product does not use."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/instruction-bound-access-control-least-privilege": {
    "capability": "Instruction-bound access control & least privilege",
@@ -278,8 +468,25 @@
    "applicable": true,
    "applicability_reason": "Every user-related table carries a user_id from the start precisely so that sessions, messages and MinIO objects stay bound to their owner once a second person uses the instance.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Open Policy Agent (OPA)",
+     "rationale": "Policy-as-code is the natural home for the specification's hard rule that multi-user operation must not start on a subscription token, alongside owner-only checks on the user_id every table carries."
+    },
+    {
+     "component": "OpenFGA",
+     "rationale": "Relationship tuples pay off in the Phase-2 multi-user operation the data model is prepared for, but in v1 they restate the user_id ownership the schema already enforces."
+    },
+    {
+     "component": "Cedar (cedar-agent, self-hosted)",
+     "rationale": "It solves the same fine-grained authorization problem as the two above with a smaller Python/TypeScript ecosystem to draw on for this stack."
+    },
+    {
+     "component": "Keycloak",
+     "rationale": "The specification explicitly rejects an external identity provider as overkill for a local stack and chooses email/password with Argon2 in Postgres instead."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/lawful-basis-purpose-governance": {
    "capability": "Lawful-basis & purpose governance",
@@ -296,8 +503,21 @@
    "applicable": true,
    "applicability_reason": "The product processes interview content for artefact generation and additionally logs token usage per session for the operator's cost control, a secondary purpose that needs its own recorded basis.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Fides",
+     "rationale": "The specification already names a maintained Verarbeitungsverzeichnis in the repository, and this turns that document into a per-activity registry of purposes and legal bases for the interview, voice and image flows."
+    },
+    {
+     "component": "Open Policy Agent (OPA)",
+     "rationale": "A runtime gate is the right place for the specification's coupling between paid API-key credentials and any processing of a second person's data."
+    },
+    {
+     "component": "OpenMetadata",
+     "rationale": "A JVM data catalog with its own search backend is a large service to classify the nine tables sketched in the data model."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/objection-opt-out-management": {
    "capability": "Objection & opt-out management",
@@ -314,8 +534,21 @@
    "applicable": true,
    "applicability_reason": "Token usage is logged per session as the operator's own cost control rather than at the user's request, so the person being grilled must be able to object to that processing.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Ethyca Fides",
+     "rationale": "It stores the objection and preference state for the interview and voice processing, which is the only place this product would need to record an opt-out."
+    },
+    {
+     "component": "Global Privacy Control (GPC)",
+     "rationale": "Honouring the signal is a few lines of middleware in the existing Next.js frontend, though the product runs no marketing or profiling for the signal to stop."
+    },
+    {
+     "component": "Apache Unomi",
+     "rationale": "A customer data platform maintains marketing profiles this product deliberately does not build, and it would add a JVM service plus a search backend to the compose stack."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/privacy-by-design-default": {
    "capability": "Privacy by design & default",
@@ -327,14 +560,31 @@
     "OpenFGA",
     "ARX Data Anonymization Tool"
    ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
+   "chosen": "Microsoft Presidio",
+   "rationale": "Full history + screenshots re-sent to Claude every round; PII masking before that call is the real v1 minimisation control.",
+   "chosen_from": "fadfdad2a03d3e82",
    "applicable": true,
    "applicability_reason": "The design already builds in deletion of audio after transcription and cascading account deletion as up-front constraints because retrofitting them would touch every schema and storage path.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Microsoft Presidio",
+     "rationale": "Transcripts and screenshots go to the Claude API on every round, so detecting and masking names and contact data in the Python backend before that call is the highest-value minimisation step here."
+    },
+    {
+     "component": "OpenBao",
+     "rationale": "Tokenizing the per-user Anthropic key that the schema already foresees keeps the most sensitive stored secret out of the application database."
+    },
+    {
+     "component": "OpenFGA",
+     "rationale": "Default-deny access enforcement matters once the instance serves more than the operator; in v1 it duplicates the single-user ownership model."
+    },
+    {
+     "component": "ARX Data Anonymization Tool",
+     "rationale": "There is no non-production analytics or test dataset in v1 to de-identify, and the tool is a Java desktop/library product in a Python and TypeScript stack."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/privacy-notice-transparency-delivery": {
    "capability": "Privacy notice & transparency delivery",
@@ -351,8 +601,21 @@
    "applicable": true,
    "applicability_reason": "Screenshots stay permanently in the history and are re-sent to Claude on every follow-up call, and speech leaves the machine to Deepgram unless a local implementation is configured, none of which is visible to the user without a notice.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "orestbida/cookieconsent (vanilla-cookieconsent)",
+     "rationale": "Its persistent preferences modal can carry the layered notice about Claude, transcription and speech processing without presupposing third-party scripts, and it drops into the Next.js frontend as a small dependency."
+    },
+    {
+     "component": "Klaro!",
+     "rationale": "Its configuration model is a catalogue of third-party services to gate, which fits this product poorly because the external calls happen server-side to Anthropic and Deepgram, not in the browser."
+    },
+    {
+     "component": "Orejime",
+     "rationale": "Its distinguishing strength is French RGAA accessibility conformance, which is not a constraint for a German-language single-operator tool."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/processor-joint-controller-contracting": {
    "capability": "Processor & joint-controller contracting",
@@ -369,8 +632,21 @@
    "applicable": true,
    "applicability_reason": "The specification names Anthropic, transcription and speech providers as processors requiring Auftragsverarbeitungsverträge and makes multi-user operation conditional on an API-key contract instead of a subscription token.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "SimpleRisk",
+     "rationale": "The specification defers the Auftragsverarbeitungsverträge with Anthropic, transcription and speech vendors to the hosting step, and a vendor register is what tracks those few processors and their sub-processors."
+    },
+    {
+     "component": "pyHanko",
+     "rationale": "Signing the handful of executed DPAs is a Python library call in the existing backend, which is proportionate to the two or three contracts this product will hold."
+    },
+    {
+     "component": "Accord Project (Cicero/Concerto)",
+     "rationale": "Computable contract templating pays off across a large clause library, whereas here the processor contracts are the vendors' own standard DPAs signed as-is."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/records-of-processing-authority-cooperation": {
    "capability": "Records of processing & authority cooperation",
@@ -387,8 +663,21 @@
    "applicable": true,
    "applicability_reason": "A Verarbeitungsverzeichnis maintained as a document in the repository is already a committed v1 deliverable.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Ethyca Fides",
+     "rationale": "It generates and versions the Article 30 record from the actual flows, which is exactly the maintained repository document the specification commits to in section 8."
+    },
+    {
+     "component": "OpenMetadata",
+     "rationale": "A live data inventory is genuinely useful once hosted, but cataloguing nine tables and one MinIO bucket does not justify its JVM and search-backend footprint in a compose stack."
+    },
+    {
+     "component": "Prighter",
+     "rationale": "An Article 27 representative is only needed by a controller established outside the EU, which a German operator running the stack on their own machine is not, and it is a proprietary service with no self-hosted form."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/rectification-erasure-restriction-processing": {
    "capability": "Rectification, erasure & restriction processing",
@@ -406,8 +695,25 @@
    "applicable": true,
    "applicability_reason": "Account deletion cascading across all data including the MinIO objects is a v1 feature, and transcripts are editable so wrongly recognised content can be corrected.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Fides (Ethyca)",
+     "rationale": "The v1 requirement is an account deletion that cascades across all data including the MinIO objects, and this drives exactly that erasure across the database and object store from one policy."
+    },
+    {
+     "component": "Temporal",
+     "rationale": "A deletion that must span Postgres rows and MinIO keys benefits from durable retries so a half-finished cascade cannot leave orphaned screenshots behind."
+    },
+    {
+     "component": "OpenFGA",
+     "rationale": "Restriction and legal-hold flags can be a status column on `session` in this schema, so an external relationship store is more indirection than the model needs."
+    },
+    {
+     "component": "Apache NiFi",
+     "rationale": "Its dataflow connectors exist to reach many downstream systems, and this product's erasure scope ends at its own Postgres and MinIO."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/requester-identity-verification": {
    "capability": "Requester identity verification",
@@ -424,8 +730,21 @@
    "applicable": true,
    "applicability_reason": "Export and account deletion act on the full session history and stored screenshots, so the requester must be proven to be the account holder before either runs.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Ory Kratos",
+     "rationale": "A headless Go identity service is the closest fit to the specification's own email/password-plus-cookie design if step-up verification is ever needed, without imposing hosted login pages on the Next.js frontend."
+    },
+    {
+     "component": "Keycloak",
+     "rationale": "It provides the same step-up flows as a full JVM identity provider, which is the kind of external login the specification rejects as overkill for a local stack."
+    },
+    {
+     "component": "CompreFace",
+     "rationale": "Face verification would introduce biometric special-category data into a product that otherwise deletes even its audio after transcription, so it contradicts the specification's own minimisation stance."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/security-testing-effectiveness-assessment": {
    "capability": "Security testing & effectiveness assessment",
@@ -437,14 +756,31 @@
     "Metasploit Framework",
     "Prowler"
    ],
-   "chosen": null,
-   "rationale": "",
-   "chosen_from": null,
+   "chosen": "Trivy",
+   "rationale": "Pure CI hygiene against the pinned container/dependency set, no runtime service.",
+   "chosen_from": "b5da10e5a51247ad",
    "applicable": true,
    "applicability_reason": "The stack pins ag-ui-claude-agent-sdk at an early 0.1.0 version and vendors a third-party skill, both of which need recurring review to confirm the protective measures still hold.",
    "scoped_from": "60ac023d83a582c0",
-   "ranked": null,
-   "ranked_from": null
+   "ranked": [
+    {
+     "component": "Trivy",
+     "rationale": "The stack is a set of container images plus pinned Python and npm dependencies — including a deliberately pinned 0.1.0 adapter — so image and dependency scanning is the test that finds real issues here."
+    },
+    {
+     "component": "OWASP ZAP",
+     "rationale": "It can be pointed at the local Next.js frontend and the FastAPI `/grill` SSE endpoint, which are the only network surfaces this product exposes."
+    },
+    {
+     "component": "Prowler",
+     "rationale": "Its checks are largely cloud-account benchmarks, and v1 has no cloud account — it becomes useful when the Phase-2 hosted operation exists."
+    },
+    {
+     "component": "Metasploit Framework",
+     "rationale": "Exploitation tooling against a single-user stack bound to the operator's own machine yields little that image and DAST scanning have not already covered."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
   },
   "gdpr/special-category-children-s-data-protection": {
    "capability": "Special-category & children's data protection",
@@ -462,6 +798,831 @@
    "applicable": true,
    "applicability_reason": "Users dictate free-form spoken content and upload arbitrary screenshots, so the system cannot rule out that special-category content enters the session history.",
    "scoped_from": "60ac023d83a582c0",
+   "ranked": [
+    {
+     "component": "Microsoft Presidio",
+     "rationale": "Free-form grilling transcripts and screenshots can carry health or other sensitive detail unintentionally, and detecting it in the Python backend before the Claude call is the practical control for this product."
+    },
+    {
+     "component": "Open Policy Agent (OPA)",
+     "rationale": "It can carry the Article 9 gate as policy next to the credential and access rules already suited to it, without adding another service."
+    },
+    {
+     "component": "Klaro",
+     "rationale": "Parental-authorisation recording has no use in a product with no public signup, where accounts are created by CLI command."
+    },
+    {
+     "component": "DeepFace",
+     "rationale": "Age estimation from faces would create biometric processing in a product that has no child-facing offering and deletes audio after transcription precisely to avoid such data."
+    }
+   ],
+   "ranked_from": "60ac023d83a582c0"
+  }
+ },
+ "disabled": {
+  "iso27001/change-release-management-for-production": {
+   "capability": "Change & Release Management for Production",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "GitHub (Enterprise) — PRs + required reviewers + Environment protection rules",
+    "Argo CD",
+    "Argo Rollouts",
+    "Kyverno + Sigstore Cosign"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/cryptography-encryption-in-transit-at-rest-key-management": {
+   "capability": "Cryptography: Encryption in Transit, At Rest & Key Management",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "OpenBao",
+    "SoftHSM2 (PKCS#11) as key root of trust",
+    "cert-manager + Let's Encrypt/ACME",
+    "Istio (or Linkerd) service mesh"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/data-classification-asset-inventory-secure-data-lifecycle": {
+   "capability": "Data Classification, Asset Inventory & Secure Data Lifecycle",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "Snipe-IT",
+    "Microsoft Presidio",
+    "OpenMetadata",
+    "nwipe"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/endpoint-off-premises-asset-protection": {
+   "capability": "Endpoint & Off-Premises Asset Protection",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "Fleet (osquery)",
+    "MeshCentral",
+    "NanoMDM",
+    "Snipe-IT"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/environment-separation-test-data-protection": {
+   "capability": "Environment Separation & Test Data Protection",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "Argo CD",
+    "OpenTofu (with per-environment workspaces/state)",
+    "Neosync",
+    "Teleport"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/ict-continuity-disaster-recovery": {
+   "capability": "ICT Continuity & Disaster Recovery",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "Bacula",
+    "DRBD (with Pacemaker/Corosync for automated failover)",
+    "Velero",
+    "pgBackRest"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/network-activity-monitoring-anomaly-detection": {
+   "capability": "Network Activity Monitoring & Anomaly Detection",
+   "framework": "iso27001",
+   "mandatory_linked": false,
+   "options": [
+    "Suricata",
+    "Zeek",
+    "Wazuh",
+    "OpenSearch"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/network-segmentation-multi-tenant-isolation": {
+   "capability": "Network Segmentation & Multi-Tenant Isolation",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "Cilium (with Hubble)",
+    "Istio Ambient Mesh",
+    "OPNsense",
+    "Headscale"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/outsourced-development-oversight": {
+   "capability": "Outsourced Development Oversight",
+   "framework": "iso27001",
+   "mandatory_linked": false,
+   "options": [
+    "GitHub Enterprise (CODEOWNERS + branch protection + required reviews + audit log)",
+    "Eramba Community",
+    "Semgrep",
+    "Sigstore / cosign (with SLSA provenance)"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/physical-environmental-facility-security": {
+   "capability": "Physical & Environmental Facility Security",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "AWS Artifact / Google Cloud Compliance Reports / Azure Service Trust Portal (cloud provider physical-security inheritance)",
+    "Fleet",
+    "NetBox",
+    "Verkada (or Envoy visitor management + Kisi access control)"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/pii-privacy-controls-legal-regulatory-register": {
+   "capability": "PII/Privacy Controls & Legal-Regulatory Register",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "Microsoft Presidio",
+    "Klaro",
+    "CISO Assistant",
+    "OSS Review Toolkit (ORT)"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/rbac-least-privilege-identity-lifecycle": {
+   "capability": "RBAC, Least Privilege & Identity Lifecycle",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "Keycloak",
+    "OpenBao",
+    "Pomerium"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/secure-development-lifecycle-secure-coding": {
+   "capability": "Secure Development Lifecycle & Secure Coding",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "OWASP ASVS 5.0 (Application Security Verification Standard)",
+    "Semgrep",
+    "OWASP ZAP",
+    "Trivy"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/secure-remote-access-egress-filtering": {
+   "capability": "Secure Remote Access & Egress Filtering",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "NetBird",
+    "Teleport",
+    "Squid",
+    "Pomerium"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/security-governance-hr-security-operating-procedures": {
+   "capability": "Security Governance, HR Security & Operating Procedures",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "Comp AI",
+    "Gophish",
+    "Frappe HR",
+    "BookStack"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/security-incident-detection-response-forensics": {
+   "capability": "Security Incident Detection, Response & Forensics",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "Wazuh",
+    "TheHive (with Cortex)",
+    "Netflix Dispatch",
+    "Velociraptor"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/supplier-ict-supply-chain-cloud-security-management": {
+   "capability": "Supplier, ICT Supply-Chain & Cloud Security Management",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "CISO Assistant (Community Edition)",
+    "OWASP Dependency-Track",
+    "Prowler",
+    "OWASP Amass"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "iso27001/vulnerability-remediation-in-the-delivery-pipeline": {
+   "capability": "Vulnerability Remediation in the Delivery Pipeline",
+   "framework": "iso27001",
+   "mandatory_linked": true,
+   "options": [
+    "Trivy (Aqua Security)",
+    "Semgrep OSS (SAST) + Trivy (dependency/vuln scanning)",
+    "OWASP Dependency-Track"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/business-continuity-disaster-recovery": {
+   "capability": "Business continuity & disaster recovery",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "restic",
+    "MinIO (S3-compatible object store with Object Lock/WORM)",
+    "Velero",
+    "Terraform"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/capacity-planning-elastic-scaling": {
+   "capability": "Capacity planning & elastic scaling",
+   "framework": "soc2",
+   "mandatory_linked": false,
+   "options": [
+    "Prometheus",
+    "KEDA (Kubernetes Event-Driven Autoscaling)",
+    "Karpenter",
+    "Grafana"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/change-management-secure-sdlc": {
+   "capability": "Change management & secure SDLC",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "GitHub (branch protection + CODEOWNERS + required reviews)",
+    "GitHub Actions with Environments + required reviewers",
+    "OpenTofu (Terraform-compatible IaC)",
+    "Argo CD (GitOps)"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/control-environment-governance-ethics-personnel": {
+   "capability": "Control environment: governance, ethics & personnel",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "GlobaLeaks",
+    "SimpleRisk (Core)",
+    "OrangeHRM (Open Source Edition)",
+    "Keycloak"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/control-framework-design-policy-deployment-accountability": {
+   "capability": "Control framework design, policy deployment & accountability",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Comp AI (Comp)",
+    "Eramba (Community Edition)",
+    "NIST OSCAL + IBM trestle"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/control-information-communications": {
+   "capability": "Control information & communications",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Eramba Community",
+    "GlobaLeaks",
+    "BookStack",
+    "Nextcloud"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/control-monitoring-evaluation-deficiency-remediation": {
+   "capability": "Control monitoring, evaluation & deficiency remediation",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Comp AI",
+    "Prowler",
+    "Grafana + Prometheus/Loki (LGTM stack)",
+    "Redmine"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/data-classification-confidentiality-protection": {
+   "capability": "Data classification & confidentiality protection",
+   "framework": "soc2",
+   "mandatory_linked": false,
+   "options": [
+    "Apache Atlas",
+    "Microsoft Presidio",
+    "OpenBao",
+    "Open Policy Agent (OPA) with OpenFGA"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/data-retention-secure-disposal": {
+   "capability": "Data retention & secure disposal",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "OpenBao",
+    "SeaweedFS",
+    "OpenMetadata",
+    "ShredOS / nwipe"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/data-subject-rights-complaint-handling": {
+   "capability": "Data-subject rights & complaint handling",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Ethyca Fides",
+    "Flowable",
+    "Chatwoot"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/encryption-cryptographic-key-management": {
+   "capability": "Encryption & cryptographic key management",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "OpenBao (Transit secrets engine + PKCS#11 HSM auto-unseal)",
+    "cert-manager + Let's Encrypt (ACME)",
+    "Google Tink"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/environmental-safeguards-facility-monitoring": {
+   "capability": "Environmental safeguards & facility monitoring",
+   "framework": "soc2",
+   "mandatory_linked": false,
+   "options": [
+    "Cloud provider compliance attestations (AWS Artifact / Google Cloud compliance reports / Azure Service Trust Portal)",
+    "Prometheus + Alertmanager with SNMP Exporter",
+    "Grafana OnCall",
+    "openDCIM"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/external-communication-incident-reporting-channels": {
+   "capability": "External communication & incident reporting channels",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "security.txt (RFC 9116)",
+    "OWASP DefectDojo",
+    "Cachet",
+    "Zammad"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/identity-access-management": {
+   "capability": "Identity & access management",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Keycloak",
+    "Apache Syncope"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/incident-response-recovery": {
+   "capability": "Incident response & recovery",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Prometheus Alertmanager",
+    "Netflix Dispatch",
+    "Cachet"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/infrastructure-network-boundary-endpoint-protection": {
+   "capability": "Infrastructure, network boundary & endpoint protection",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "OWASP Coraza WAF (+ OWASP Core Rule Set)",
+    "Cilium + Hubble (eBPF)",
+    "Wazuh",
+    "Falco"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/personal-data-quality-management": {
+   "capability": "Personal data quality management",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Great Expectations",
+    "Soda Core (SodaCL)",
+    "dbt Core (tests + snapshots)",
+    "Elementary Data"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/physical-access-control-secure-media-disposal": {
+   "capability": "Physical access control & secure media disposal",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Cloud provider (AWS / Azure / GCP) inherited data-center controls",
+    "Verkada or Kisi cloud access control",
+    "Fleet",
+    "comply/OpenComply"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/privacy-breach-detection-notification": {
+   "capability": "Privacy breach detection & notification",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Wazuh",
+    "DFIR-IRIS",
+    "Camunda Platform 7",
+    "OpenMetadata"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/privacy-notice-consent-lawful-collection": {
+   "capability": "Privacy notice, consent & lawful collection",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Ethyca Fides",
+    "Klaro!",
+    "Jitsu"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/processing-integrity-validation-pipeline-output-verification": {
+   "capability": "Processing integrity: validation, pipeline & output verification",
+   "framework": "soc2",
+   "mandatory_linked": false,
+   "options": [
+    "Temporal",
+    "Great Expectations",
+    "Apache Kafka with Apicurio Registry",
+    "SeaweedFS (S3 Object Lock / WORM)"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/risk-assessment-fraud-risk-governance": {
+   "capability": "Risk assessment & fraud-risk governance",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "CISO Assistant",
+    "SimpleRisk",
+    "Apache Superset"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/system-monitoring-alerting-audit-log-retention": {
+   "capability": "System monitoring, alerting & audit log retention",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Prometheus + Alertmanager",
+    "Grafana Loki + Grafana",
+    "Wazuh",
+    "AWS S3 with Object Lock (WORM)"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/vendor-third-party-risk-management": {
+   "capability": "Vendor & third-party risk management",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Eramba (Community Edition)",
+    "SimpleRisk (Core)",
+    "OWASP Nuclei"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
+   "ranked": null,
+   "ranked_from": null
+  },
+  "soc2/vulnerability-management-remediation": {
+   "capability": "Vulnerability management & remediation",
+   "framework": "soc2",
+   "mandatory_linked": true,
+   "options": [
+    "Trivy",
+    "Prowler",
+    "DefectDojo",
+    "OSV-Scanner"
+   ],
+   "chosen": null,
+   "rationale": "",
+   "chosen_from": null,
+   "applicable": true,
+   "applicability_reason": "",
+   "scoped_from": null,
    "ranked": null,
    "ranked_from": null
   }
