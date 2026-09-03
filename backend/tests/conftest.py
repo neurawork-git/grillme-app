@@ -13,8 +13,11 @@ TEST_DATABASE_URL = os.environ.get(
     "TEST_DATABASE_URL", f"postgresql+asyncpg://grillme:change-me@localhost:5432/{TEST_DB_NAME}"
 )
 
-# Tests import app modules that read DATABASE_URL at import time (app.db) — set before any import.
+# Tests import app modules that read settings at import time (app.db/app.config) — set before
+# any import. SESSION_SECRET has no code default (fail-fast in production), so tests must supply
+# one explicitly.
 os.environ["DATABASE_URL"] = TEST_DATABASE_URL
+os.environ.setdefault("SESSION_SECRET", "test-session-secret")
 
 
 @pytest.fixture(scope="session", autouse=True)
