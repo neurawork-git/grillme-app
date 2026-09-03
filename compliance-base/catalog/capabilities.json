@@ -560,9 +560,18 @@
        "verdict": "keep",
        "replaced_from": null,
        "why": "Service mesh enforcing automatic mutual-TLS between internal product services (confidentiality/integrity for east-west traffic). License claim verified: the linkerd2 source remains Apache-2.0 (CNCF graduated). Note: Buoyant moved free stable-release BINARIES behind a paid subscription, but that is a distribution/business-model change, not a source relicensing — the code is still Apache-2.0 and buildable from source, so it is product-embeddable under the policy (which tests the license, not free-binary availability). Not a source-available relicensing like Redis/Elasticsearch. Istio alternative is also Apache-2.0. Verdict stands."
+      },
+      {
+       "name": "Infisical",
+       "kind": "open-source",
+       "license": "MIT",
+       "role": "in-product",
+       "verdict": "keep",
+       "replaced_from": null,
+       "why": "Lighter self-hostable secrets manager for the single-Postgres, docker-compose deployment this operator is actually rolling out: one container holds and injects the .env secrets the compose stack reads, and the same image redeploys elsewhere unchanged. License verified: the core platform (secrets management, CLI, SDKs, PKI, SSH) is MIT; only the separate ee/ directory (enterprise features, not required for self-hosted core use) carries a different license. Narrower than OpenBao's PKI/dynamic-secrets/transit-engine scope, which this product does not need."
       }
      ],
-     "stack_notes": "All four are current and widely adopted as of 2025-2026. OpenBao is the Linux Foundation open-source fork of Vault (relevant since Vault moved to the BSL license); pick Vault if you want the commercial/enterprise edition. For availability/resilience add provider-native encrypted backups + point-in-time recovery, which complement rather than replace the above."
+     "stack_notes": "All four are current and widely adopted as of 2025-2026. OpenBao is the Linux Foundation open-source fork of Vault (relevant since Vault moved to the BSL license); pick Vault if you want the commercial/enterprise edition. Infisical is the lighter pick when the deployment target is a single docker-compose host rather than a platform needing OpenBao's own PKI/dynamic-secrets engine. For availability/resilience add provider-native encrypted backups + point-in-time recovery, which complement rather than replace the above."
     },
     {
      "name": "Instruction-bound access control & least privilege",
@@ -3304,7 +3313,8 @@
    "Unlicense",
    "CC0",
    "Zlib",
-   "LGPL (dynamic)"
+   "LGPL (dynamic)",
+   "W3C-Software-and-Document-License"
   ],
   "not_in_product": [
    "GPL-2.0",
