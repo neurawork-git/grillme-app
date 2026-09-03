@@ -1,0 +1,11 @@
+# Application (backend/frontend)
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+.next/
+.env
+uv.lock
+
+# worktree skill local config
+.claude/*.local.md
