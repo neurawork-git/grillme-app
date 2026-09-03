@@ -191,7 +191,7 @@ für den v1-Scope.
 
 | # | Phase | Description | Status | Parallel | Depends | Plan | Report | PR |
 |---|-------|-------------|--------|----------|---------|------|--------|----|
-| 1 | Grundgerüst | Docker-Compose-Stack, Postgres-Schema, Login/Session-CRUD, MinIO-Anbindung | in-progress | - | - | /home/felix/projects/grillme-app/.claude/PRPs/grillme-app-223fe1d0/plans/grillme-v1-phase1-grundgeruest.plan.md | - | - |
+| 1 | Grundgerüst | Docker-Compose-Stack, Postgres-Schema, Login/Session-CRUD, MinIO-Anbindung | in-progress | - | - | /home/felix/projects/grillme-app/.claude/PRPs/grillme-app-223fe1d0/plans/grillme-v1-phase1-grundgeruest.plan.md | /home/felix/projects/grillme-app/.claude/PRPs/grillme-app-223fe1d0/reports/grillme-v1-phase1-grundgeruest-report.md | https://github.com/neurawork-git/grillme-app/pull/1 |
 | 2 | Entscheidungsbaum-Agent | AG-UI/Claude-Agent-SDK-Integration, Baum-Persistenz, Frontier-Berechnung, Text-Chat | pending | - | 1 | - | - | - |
 | 3 | Voice-Input/Output | Transcriber/Speaker-Interfaces, Deepgram-Implementierung, Moduswechsel Text/Voice | pending | with 4 | 2 | - | - | - |
 | 4 | Verlauf & Screenshots | Durchblätterbarer Frage-Antwort-Verlauf je Session, Bild-Upload in MinIO | pending | with 3 | 2 | - | - | - |
