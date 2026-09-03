@@ -57,8 +57,8 @@ worktree-local `.claude/worktree.local.md` config.
 
 ## Delivery
 
-- **Commits:** `467209a` — feat: GrillMe v1 Phase 1 — Compose-Stack, Postgres-Schema, Login, Session-CRUD, MinIO
-- **Pull Request:** Not opened yet — created by `/prp-pr` next.
+- **Commits:** `1622747` — feat: GrillMe v1 Phase 1 — Compose-Stack, Postgres-Schema, Login, Session-CRUD, MinIO; `c25fb1b` — docs: record Phase 1 report and PR link in GrillMe v1 PRD
+- **Pull Request:** https://github.com/neurawork-git/grillme-app/pull/1
 - **Base / Head:** `main` <- `grillme-v1-phase1-grundgeruest`
-- **Source PRD:** `/home/felix/projects/grillme-app/.claude/PRPs/grillme-app-223fe1d0/prds/grillme-v1.prd.md`, Phase 1 — to be marked implemented via `/prp-prd-update` after PR creation.
+- **Source PRD:** `/home/felix/projects/grillme-app/.claude/PRPs/grillme-app-223fe1d0/prds/grillme-v1.prd.md`, Phase 1 — marked implemented via `/prp-prd-update` next.
 - **Tracked follow-ups:** None.
